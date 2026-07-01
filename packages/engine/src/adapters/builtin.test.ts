@@ -107,4 +107,23 @@ describe('builtin adapters', () => {
     expect(body).toContain('## Boundaries');
     expect(body).toContain('Be concise and specific.');
   });
+
+  it('claude-agents slugifies the name/path to Claude Code rules', () => {
+    const dirty = {
+      ...repo,
+      agents: [
+        {
+          meta: {
+            id: 'Code_Reviewer',
+            name: 'Code Reviewer',
+            description: 'x.',
+          },
+          body: '',
+        },
+      ],
+    };
+    const out = claudeAgentsAdapter.render(dirty)[0];
+    expect(out?.path).toBe('.claude/agents/code-reviewer.md');
+    expect(out?.body).toContain('name: "code-reviewer"');
+  });
 });

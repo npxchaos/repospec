@@ -6,6 +6,19 @@ function yaml(value: string): string {
   return JSON.stringify(value);
 }
 
+/**
+ * Claude Code requires a subagent `name` to be lowercase letters and hyphens
+ * only. Slugify the role id so any id (e.g. `Reviewer`, `my_agent`) yields a
+ * valid, loadable name and filename. Falls back to `agent` if nothing remains.
+ */
+export function subagentName(id: string): string {
+  const slug = id
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return slug || 'agent';
+}
+
 function bulletList(heading: string, items?: string[]): string {
   if (!items || items.length === 0) return '';
   return [`## ${heading}`, '', ...items.map((i) => `- ${i}`)].join('\n');
@@ -21,7 +34,7 @@ export function renderSubagent(agent: Agent, project: Project): string {
 
   const frontmatter = [
     '---',
-    `name: ${yaml(meta.id)}`,
+    `name: ${yaml(subagentName(meta.id))}`,
     `description: ${yaml(meta.description)}`,
     ...(meta.model ? [`model: ${yaml(meta.model)}`] : []),
     '---',
@@ -58,7 +71,7 @@ export const claudeAgentsAdapter: Adapter = {
     'Claude Code subagents — generates .claude/agents/<id>.md per role',
   render: (repo: RepospecRepository): AdapterOutput[] =>
     repo.agents.map((agent) => ({
-      path: `.claude/agents/${agent.meta.id}.md`,
+      path: `.claude/agents/${subagentName(agent.meta.id)}.md`,
       body: renderSubagent(agent, repo.project),
     })),
 };

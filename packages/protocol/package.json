@@ -1,6 +1,6 @@
 {
   "name": "@repospec/protocol",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "The executable Repospec Specification: types and schemas for the .repospec/ protocol.",
   "license": "MIT",
   "type": "module",
@@ -28,5 +28,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/npxchaos/repospec.git",
+    "directory": "packages/protocol"
+  },
+  "homepage": "https://github.com/npxchaos/repospec#readme",
+  "bugs": {
+    "url": "https://github.com/npxchaos/repospec/issues"
   }
 }

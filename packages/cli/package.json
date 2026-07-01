@@ -1,6 +1,6 @@
 {
   "name": "@repospec/cli",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "The Repospec CLI: one human entrypoint to the Repospec engine.",
   "license": "MIT",
   "type": "module",
@@ -30,5 +30,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/npxchaos/repospec.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/npxchaos/repospec#readme",
+  "bugs": {
+    "url": "https://github.com/npxchaos/repospec/issues"
   }
 }

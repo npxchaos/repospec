@@ -1,6 +1,6 @@
 {
   "name": "@repospec/templates",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "Default content and adapter templates the Repospec protocol is seeded from.",
   "license": "MIT",
   "type": "module",
@@ -27,5 +27,14 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/npxchaos/repospec.git",
+    "directory": "packages/templates"
+  },
+  "homepage": "https://github.com/npxchaos/repospec#readme",
+  "bugs": {
+    "url": "https://github.com/npxchaos/repospec/issues"
   }
 }

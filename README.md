@@ -2,7 +2,10 @@
 
 [![CI](https://github.com/npxchaos/repospec/actions/workflows/ci.yml/badge.svg)](https://github.com/npxchaos/repospec/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@repospec/cli.svg)](https://www.npmjs.com/package/@repospec/cli)
+[![docs](https://img.shields.io/badge/docs-repospec-3c8772.svg)](https://npxchaos.github.io/repospec/)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
+📖 **Documentation site:** <https://npxchaos.github.io/repospec/>
 
 > An open, repository-first **specification** that standardizes how AI coding
 > assistants understand, build, and evolve a software project — without prompts.

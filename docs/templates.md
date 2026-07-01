@@ -30,7 +30,7 @@ validated configuration.
 ## Interpolation
 
 Seed content is filled from the init answers with a small substitution engine.
-`interpolate` replaces `{{ dotted.path }}` placeholders from a variable tree and
+`interpolate` replaces <code v-pre>{{ dotted.path }}</code> placeholders from a variable tree and
 **throws on a missing variable** — a loud failure beats a silent blank in a
 generated document.
 
@@ -47,9 +47,9 @@ This is a **{{ project.type }}**.
 const md = interpolate(TEMPLATE, { project: project.project });
 ```
 
-- Whitespace inside the braces is ignored: `{{project.name}}` and
-  `{{ project.name }}` are equivalent.
-- Paths resolve into nested objects (`{{ project.name }}` reads
+- Whitespace inside the braces is ignored: <code v-pre>{{project.name}}</code> and
+  <code v-pre>{{ project.name }}</code> are equivalent.
+- Paths resolve into nested objects (<code v-pre>{{ project.name }}</code> reads
   `vars.project.name`).
 - A referenced variable that is missing or `null`/`undefined` throws.
 

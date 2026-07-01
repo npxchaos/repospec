@@ -4,3 +4,5 @@ pnpm-lock.yaml
 **/*.md
 examples/
 schemas/
+**/.vitepress/cache/**
+**/.vitepress/dist/**

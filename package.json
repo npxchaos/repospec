@@ -15,6 +15,9 @@
     "dev": "pnpm -r --parallel dev",
     "typecheck": "pnpm -r typecheck",
     "schema": "node scripts/emit-schema.mjs",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
@@ -38,6 +41,7 @@
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2",
+    "vitepress": "^1.6.4",
     "vitest": "^3.0.5",
     "zod-to-json-schema": "^3.25.2"
   }

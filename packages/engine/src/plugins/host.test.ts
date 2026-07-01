@@ -83,6 +83,62 @@ describe('plugin runtime', () => {
     expect(warnings.join('\n')).toContain('integrity mismatch');
   });
 
+  const FETCH_PROBE = `export default async () => {
+    try { await fetch('http://127.0.0.1:1'); return { outputs: [{ path: 'N', body: 'reached' }] }; }
+    catch (e) { return { outputs: [{ path: 'N', body: String(e.message) }] }; }
+  };\n`;
+
+  it('denies network to a plugin without the network capability', async () => {
+    await writeFile(
+      join(root, '.repospec', 'plugins', 'gen-extra', 'index.mjs'),
+      FETCH_PROBE,
+    );
+    await approve(); // manifest declares only generate-outputs
+    const { outputs } = await runPlugins(fs, root);
+    expect(outputs[0]?.body).toContain('denied by sandbox');
+  });
+
+  it('allows network to a plugin approved for it', async () => {
+    const dir = join(root, '.repospec', 'plugins', 'gen-extra');
+    await writeFile(
+      join(dir, 'repospec-plugin.yaml'),
+      'id: gen-extra\nversion: "1.0.0"\ndescription: x\ncapabilities: [generate-outputs, network]\nentry: index.mjs\n',
+    );
+    await writeFile(join(dir, 'index.mjs'), FETCH_PROBE);
+    await approve();
+    const { outputs } = await runPlugins(fs, root);
+    // Real fetch runs (connection refused), NOT the sandbox denial.
+    expect(outputs[0]?.body).not.toContain('denied by sandbox');
+  });
+
+  it('resolves and runs a plugin installed in node_modules', async () => {
+    const id = 'repospec-plugin-demo';
+    const projectPath = join(root, '.repospec', 'project.yaml');
+    const yaml = await readFile(projectPath, 'utf8');
+    await writeFile(
+      projectPath,
+      yaml.replace(/plugins:[\s\S]*$/m, `plugins:\n  - id: ${id}\n`),
+    );
+    const pkg = join(root, 'node_modules', id);
+    await mkdir(pkg, { recursive: true });
+    await writeFile(
+      join(pkg, 'package.json'),
+      `{"name":"${id}","version":"1.0.0"}\n`,
+    );
+    await writeFile(
+      join(pkg, 'repospec-plugin.yaml'),
+      `id: ${id}\nversion: "1.0.0"\ndescription: x\ncapabilities: [generate-outputs]\nentry: index.mjs\n`,
+    );
+    await writeFile(
+      join(pkg, 'index.mjs'),
+      `export default async () => ({ outputs: [{ path: 'NPM.md', body: 'from npm' }] });\n`,
+    );
+    await approve();
+    const { outputs, warnings } = await runPlugins(fs, root);
+    expect(warnings).toEqual([]);
+    expect(outputs).toEqual([{ path: 'NPM.md', body: 'from npm' }]);
+  });
+
   it('sandboxes an approved plugin: filesystem writes are denied (ADR-0010)', async () => {
     const target = join(root, 'ESCAPED.txt');
     await writeFile(

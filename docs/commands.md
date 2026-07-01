@@ -58,13 +58,15 @@ provider-agnostic and unit-tested without a network.
 ## Plugins
 
 `project.yaml` may declare `plugins` (see [`spec/configuration.md`](../spec/configuration.md)
-§3.7). A plugin lives at `.repospec/plugins/<id>/` with a `repospec-plugin.yaml`
-manifest ([RFC-0001](../spec/rfcs/0001-plugin-manifest-and-consent.md)) and runs
-only under the trust model in
-[ADR-0008](./adr/0008-plugin-runtime-security.md) / [ADR-0009](./adr/0009-plugin-sandbox-mechanism.md):
+§3.7). A plugin is resolved from a local `.repospec/plugins/<id>/` **or** an
+installed npm package `<id>`, each shipping a `repospec-plugin.yaml` manifest
+([RFC-0001](../spec/rfcs/0001-plugin-manifest-and-consent.md)). It runs only
+under the trust model in [ADR-0008](./adr/0008-plugin-runtime-security.md):
 **integrity + consent are the gate**, execution is a subprocess under Node's
 Permission Model with no filesystem access and no ambient environment
 ([ADR-0010](./adr/0010-plugin-sandbox-permission-model.md)), and it is opt-in.
+A plugin gets `fetch`/`WebSocket` only if approved for the `network` capability
+(low-level `node:net` access can't be blocked in-process — see ADR-0010).
 
 | Command | What it does |
 | --- | --- |

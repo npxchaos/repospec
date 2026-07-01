@@ -63,20 +63,26 @@ Model is now a genuine second layer, not just cooperative isolation.
 - The engine keeps sole authority over writes and the ownership model.
 
 ### Negative / trade-offs
-- **Network is not gated.** The Permission Model has no network permission, so a
-  plugin can still make outbound network calls. The `network` capability stays
-  unenforced (and unsupported) until a network-gating mechanism exists; integrity
-  + consent remain the control there.
-- Plugins must be **self-contained in their directory** — imports outside
-  `pluginDir` (e.g. `node_modules`) are denied by `--allow-fs-read`. External
-  dependencies must be bundled. (npm-based resolution is a separate follow-up.)
+- **Network is only partially gated.** A plugin not approved for the `network`
+  capability has `globalThis.fetch` and `WebSocket` replaced with throwing stubs
+  (blocking the common modern path). But the Permission Model has no network
+  permission, and the airtight approach — a `module` resolve hook refusing
+  `node:net`/`node:http`/… — requires `--allow-worker`, which this sandbox denies.
+  So the low-level `node:net`/`node:http` builtins remain reachable in-process.
+  Full network isolation needs an OS sandbox (future); integrity + consent remain
+  the control for the residual.
+- Plugin entries must be **single self-contained modules** — the `data:` URL
+  cannot resolve relative or `node_modules` imports. Bundle dependencies.
 - Subprocess startup is slightly heavier than a worker.
 
 ### Neutral / follow-ups
-- Network gating (a proxy/broker, or an OS sandbox that covers sockets) to make
-  the `network` capability real.
-- npm-based plugin resolution with an `--allow-fs-read` grant scoped to the
-  resolved package.
+- **npm resolution (shipped):** a declared plugin resolves from a local
+  `.repospec/plugins/<id>/` **or** an installed npm package `<id>` shipping a
+  `repospec-plugin.yaml`. Resolution and source-reading happen engine-side (with
+  full fs); the sandboxed child still receives only the source, so the zero-fs
+  guarantee holds.
+- Airtight network gating via an OS sandbox that covers sockets.
+- A first-class bundling step so multi-file / dependency-bearing plugins can run.
 
 ## Alternatives considered
 

@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
-import { join } from 'node:path';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import {
   REPOSPEC_DIR,
   readRepospec,
@@ -14,6 +15,30 @@ import { integrityOf } from './integrity.js';
 
 /** The capability enum type, reused for resolved plugins. */
 type Capability = PluginManifest['capabilities'][number];
+
+/**
+ * Locate a declared plugin's directory: a local `.repospec/plugins/<id>/` first,
+ * then an installed npm package `<id>` that ships a `repospec-plugin.yaml`
+ * (resolved engine-side; the sandboxed child still receives only the source).
+ * Returns `null` if neither has a manifest.
+ */
+async function locatePluginDir(
+  fs: RepospecFileSystem,
+  repospecDir: string,
+  root: string,
+  id: string,
+): Promise<string | null> {
+  const local = join(repospecDir, 'plugins', id);
+  if (await fs.exists(join(local, 'repospec-plugin.yaml'))) return local;
+  try {
+    const require = createRequire(join(root, 'noop.js'));
+    const pkgDir = dirname(require.resolve(`${id}/package.json`));
+    if (await fs.exists(join(pkgDir, 'repospec-plugin.yaml'))) return pkgDir;
+  } catch {
+    // not an installed npm package — fall through
+  }
+  return null;
+}
 
 /** A file a plugin wants generated (same shape as an adapter output). */
 export interface PluginOutput {
@@ -64,15 +89,16 @@ export async function resolvePlugins(
   }
 
   for (const ref of repo.project.plugins) {
-    const dir = join(repospecDir, 'plugins', ref.id);
-    const manifestPath = join(dir, 'repospec-plugin.yaml');
-    if (!(await fs.exists(manifestPath))) {
+    const dir = await locatePluginDir(fs, repospecDir, root, ref.id);
+    if (!dir) {
       warnings.push(
-        `Plugin "${ref.id}": no manifest at .repospec/plugins/${ref.id}/.`,
+        `Plugin "${ref.id}": no manifest (looked in .repospec/plugins/${ref.id}/ and node_modules).`,
       );
       continue;
     }
-    const manifest = parsePluginManifest(await fs.readFile(manifestPath));
+    const manifest = parsePluginManifest(
+      await fs.readFile(join(dir, 'repospec-plugin.yaml')),
+    );
     const entryPath = join(dir, manifest.entry);
     if (!(await fs.exists(entryPath))) {
       warnings.push(`Plugin "${ref.id}": entry "${manifest.entry}" missing.`);
@@ -129,6 +155,11 @@ process.stdin.on('data', (c) => { data += c; });
 process.stdin.on('end', async () => {
   try {
     const { source, repo, capabilities } = JSON.parse(data);
+    if (!Array.isArray(capabilities) || !capabilities.includes('network')) {
+      const deny = () => { throw new Error('network access denied by sandbox (network capability not approved)'); };
+      globalThis.fetch = deny;
+      globalThis.WebSocket = deny;
+    }
     const url = 'data:text/javascript,' + encodeURIComponent(source);
     const mod = await import(url);
     const fn = mod && mod.default;
@@ -232,15 +263,16 @@ export async function runPlugins(
   }
 
   for (const ref of repo.project.plugins) {
-    const dir = join(repospecDir, 'plugins', ref.id);
-    const manifestPath = join(dir, 'repospec-plugin.yaml');
-    if (!(await fs.exists(manifestPath))) {
+    const dir = await locatePluginDir(fs, repospecDir, root, ref.id);
+    if (!dir) {
       warnings.push(
-        `Plugin "${ref.id}": no manifest at .repospec/plugins/${ref.id}/. Skipped.`,
+        `Plugin "${ref.id}": no manifest (looked in .repospec/plugins/${ref.id}/ and node_modules). Skipped.`,
       );
       continue;
     }
-    const manifest = parsePluginManifest(await fs.readFile(manifestPath));
+    const manifest = parsePluginManifest(
+      await fs.readFile(join(dir, 'repospec-plugin.yaml')),
+    );
     const entryPath = join(dir, manifest.entry);
     if (!(await fs.exists(entryPath))) {
       warnings.push(

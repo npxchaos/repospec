@@ -81,10 +81,14 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Every roadmap deliverable is done.** The gated plugin runtime now ships
-([ADR-0009](./docs/adr/0009-plugin-sandbox-mechanism.md),
-[RFC-0001](./spec/rfcs/0001-plugin-manifest-and-consent.md)): manifests, an
-approval lockfile pinned by integrity hash, and worker-isolated, consent-gated,
-opt-in execution (`plugins list`/`approve`, `generate --plugins`). Future
-hardening only: a stricter sandbox target (WASM / OS-sandboxed subprocess) and
-npm-based plugin resolution.
+**Every roadmap deliverable is done, plus post-roadmap plugin hardening.** The
+gated plugin runtime ships ([RFC-0001](./spec/rfcs/0001-plugin-manifest-and-consent.md)):
+manifests, an integrity-pinned approval lockfile, consent-gated opt-in execution
+(`plugins list`/`approve`, `generate --plugins`), resolved from local
+`.repospec/plugins/` **or npm**. Execution runs in a subprocess under Node's
+Permission Model with no filesystem access
+([ADR-0010](./docs/adr/0010-plugin-sandbox-permission-model.md), supersedes
+ADR-0009's worker), and `fetch`/`WebSocket` are denied without the `network`
+capability. Remaining hardening: airtight network isolation (an OS sandbox
+covering sockets — `node:net` isn't blockable in-process) and a bundling step so
+multi-file / dependency-bearing plugins can run.

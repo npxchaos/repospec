@@ -46,6 +46,20 @@ title is stripped). This is offline: it reads only local files.
 The result is a **draft you own** — review and trim it. Pass `--no-import-docs`
 to fall back to the generic templates.
 
+### Claude Code subagents (`claude-agents` adapter)
+
+Enable the `claude-agents` adapter (in `project.yaml` `adapters:` or at `init`)
+to project **each `.repospec/agents/<id>.md` role into a native Claude Code
+subagent** at `.claude/agents/<id>.md` — frontmatter (`name`, `description`,
+optional `model`) plus a system prompt built from the role's responsibilities,
+boundaries, and body. `repospec sync` keeps them current from the single source
+of truth.
+
+Why it matters: those subagents are directly invocable in Claude Code and can be
+**fanned out in parallel**. Repospec defines the roles and shared context; the
+tool runs them. For parallel *writers*, give each a git worktree or scope roles
+to disjoint files (rule `appliesTo` globs) so they don't collide.
+
 ## Validation
 
 | Command | What it does |

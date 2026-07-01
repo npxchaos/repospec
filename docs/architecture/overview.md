@@ -128,7 +128,7 @@ Code extension or CI action could use it directly).
 - `doctor`: validate a repo's `.repospec/`, report problems, detect code drift.
 - `upgrade`: migrate between protocol versions.
 - `review` / `architect`: AI-assisted, via an injectable `LlmClient` port.
-- the **adapter registry** (nine built-in renderers) and the **plugin runtime**
+- the **adapter registry** (ten built-in renderers) and the **plugin runtime**
   (approved, integrity-pinned, run in a permission-restricted subprocess).
 
 Depends on: protocol, templates.

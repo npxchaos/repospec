@@ -20,8 +20,10 @@ embeddable in any front-end — the CLI, an editor extension, or a CI action
   `review`/`architect`/`bootstrap` AI assist are provider-agnostic and testable
   with a fake.
 - **Filesystems:** `NodeFileSystem` and `MemoryFileSystem` (`RepospecFileSystem`).
-- **Adapters:** `Adapter`, `AdapterRegistry`, and nine built-ins — `claude`,
-  `agents`, `copilot`, `cursor`, `windsurf`, `gemini`, `zed`, `cline`, `continue`.
+- **Adapters:** `Adapter`, `AdapterRegistry`, and ten built-ins — `claude`,
+  `agents`, `copilot`, `cursor`, `windsurf`, `gemini`, `zed`, `cline`, `continue`,
+  and `claude-agents` (projects each role into a native Claude Code subagent at
+  `.claude/agents/<id>.md`).
 - **Plugin runtime (gated):** `runPlugins`, `resolvePlugins`, `buildApprovalLock`,
   `integrityOf` — approved, integrity-pinned plugins run in a worker sandbox
   (ADR-0008/0009).

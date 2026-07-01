@@ -32,6 +32,7 @@ export {
   zedAdapter,
   clineAdapter,
   continueAdapter,
+  claudeAgentsAdapter,
 } from './adapters/builtin.js';
 
 // Managed-file helpers (ownership model)

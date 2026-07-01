@@ -1,5 +1,6 @@
 import type { Adapter } from './types.js';
 import { renderAssistantGuide } from './markdown.js';
+import { claudeAgentsAdapter } from './claude-agents.js';
 
 /** Adapter for Claude / Claude Code, emitting `CLAUDE.md`. */
 export const claudeAdapter: Adapter = {
@@ -77,6 +78,8 @@ export const continueAdapter: Adapter = {
   ],
 };
 
+export { claudeAgentsAdapter } from './claude-agents.js';
+
 /** All adapters that ship with the engine. */
 export const builtinAdapters: Adapter[] = [
   claudeAdapter,
@@ -88,4 +91,5 @@ export const builtinAdapters: Adapter[] = [
   zedAdapter,
   clineAdapter,
   continueAdapter,
+  claudeAgentsAdapter,
 ];

@@ -23,7 +23,7 @@ features:
     details: >-
       Author a single .repospec/ directory. Adapters project it into AGENTS.md,
       CLAUDE.md, Cursor, Copilot, Windsurf, Gemini, Zed, Cline, and Continue —
-      kept in sync with one command.
+      plus native Claude Code subagents — kept in sync with one command.
   - title: A standard, not a tool
     details: >-
       The Specification is language-neutral and versioned independently of the

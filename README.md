@@ -27,7 +27,7 @@ npx @repospec/cli init   # interview → generate a complete .repospec/ + tool e
 
 **Published on npm; the full command surface is implemented.** `init`,
 `bootstrap`, `generate`, `sync`, `doctor`, `upgrade`, `review`, `architect`, and
-`plugins` all work end-to-end; nine adapters render tool entrypoints; the plugin
+`plugins` all work end-to-end; ten adapters render tool entrypoints; the plugin
 runtime executes approved, integrity-pinned plugins in a sandbox. Every roadmap
 milestone is delivered (see [`TODO.md`](./TODO.md)); releases ship via Changesets.
 
@@ -91,6 +91,9 @@ the test of a standard.
 A single authored `.repospec/` is projected into each assistant's native entrypoint
 by **adapters** — `AGENTS.md`, `CLAUDE.md`, Cursor, GitHub Copilot, Windsurf,
 Gemini, Zed, Cline, and Continue all ship today — and kept current by `repospec sync`.
+A tenth adapter, `claude-agents`, projects each role you define into a native
+Claude Code subagent (`.claude/agents/<id>.md`) you can invoke and fan out in
+parallel.
 
 ## Reference implementation (TypeScript)
 

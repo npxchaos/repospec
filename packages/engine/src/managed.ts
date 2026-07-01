@@ -40,6 +40,16 @@ export function wrapManaged(body: string, protocolVersion: string): string {
     `checksum: ${checksum(body)}`,
     END,
   ].join('\n');
+  // Some tools (e.g. Claude Code subagents, Cursor `.mdc`) require YAML
+  // frontmatter to be the very first thing in the file. When the body opens
+  // with a frontmatter block, keep it first and place the managed header
+  // immediately after it. `parseManaged` reverses this exactly.
+  const fm = /^---\n[\s\S]*?\n---\n/.exec(body);
+  if (fm) {
+    const prefix = fm[0];
+    const rest = body.slice(prefix.length);
+    return `${prefix}${header}\n${rest}`;
+  }
   return `${header}\n\n${body}`;
 }
 
@@ -50,13 +60,29 @@ export function wrapManaged(body: string, protocolVersion: string): string {
  * @returns The parsed managed file, or `null` if it is not Repospec-managed.
  */
 export function parseManaged(text: string): ManagedFile | null {
-  if (!text.startsWith(BEGIN)) return null;
-  const end = text.indexOf(END);
+  // The header is normally first, but may sit just after a leading frontmatter
+  // block (see `wrapManaged`). Detect that case and recover the original body.
+  let prefix = '';
+  let scan = text;
+  if (!text.startsWith(BEGIN)) {
+    const fm = /^---\n[\s\S]*?\n---\n/.exec(text);
+    if (fm && text.slice(fm[0].length).startsWith(BEGIN)) {
+      prefix = fm[0];
+      scan = text.slice(fm[0].length);
+    }
+  }
+  if (!scan.startsWith(BEGIN)) return null;
+  const end = scan.indexOf(END);
   if (end === -1) return null;
-  const header = text.slice(BEGIN.length, end);
-  const body = text.slice(end + END.length).replace(/^\n+/, '');
+  const header = scan.slice(BEGIN.length, end);
+  const after = scan.slice(end + END.length);
   const protocol = /protocol:\s*(\S+)/.exec(header)?.[1];
   const checksumValue = /checksum:\s*(\S+)/.exec(header)?.[1];
+  // Frontmatter path: exactly one '\n' was inserted between the header and the
+  // remainder. Classic path: strip all leading newlines (two were inserted).
+  const body = prefix
+    ? prefix + (after.startsWith('\n') ? after.slice(1) : after)
+    : after.replace(/^\n+/, '');
   return { protocol, checksum: checksumValue, body };
 }
 

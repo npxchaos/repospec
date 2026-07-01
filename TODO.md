@@ -34,7 +34,7 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 
 ## ▸ Milestone 3 — Phase 5: Config files & adapters — ✅ DONE
 - [x] 3.1 `engine`: adapter registry + interface (ADR-0003)
-- [x] 3.2 Adapters: Claude (`CLAUDE.md`), `AGENTS.md`, Cursor, Copilot, Windsurf, Gemini, Zed, Cline, Continue
+- [x] 3.2 Adapters: Claude (`CLAUDE.md`), `AGENTS.md`, Cursor, Copilot, Windsurf, Gemini, Zed, Cline, Continue, Claude Code subagents (`.claude/agents/`)
 - [x] 3.3 `repospec generate`
 - [x] 3.4 `repospec sync` with ownership guard + `--check` (ADR-0004)
 - [x] 3.5 `repospec doctor`
@@ -77,9 +77,10 @@ whose `appliesTo` globs match no files)._
 ## Current state (2026-07-01)
 **The full command surface is implemented:** `init`, `bootstrap`, `generate`,
 `sync` (`--check` + ownership guard), `doctor` (`--strict`, with code-drift
-detection), `upgrade`, `review`, and `architect`. Nine adapters render tool
+detection), `upgrade`, `review`, and `architect`. Ten adapters render tool
 entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini, Zed, Cline,
-Continue). JSON Schema
+Continue) — plus `claude-agents`, which projects each role into a native Claude
+Code subagent under `.claude/agents/`. JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 

@@ -1,4 +1,4 @@
-# Forge Protocol
+# Repospec Protocol
 
 **The open engineering protocol for AI-assisted software development.**
 
@@ -16,7 +16,7 @@ The result is a workflow built on prompts and tribal knowledge — fragile, inco
 
 Stop teaching AI how your project works. Make the project describe itself.
 
-Forge moves context out of the conversation and into the repository, where it belongs. The repo becomes the source of truth. The AI follows a protocol instead of a prompt.
+Repospec moves context out of the conversation and into the repository, where it belongs. The repo becomes the source of truth. The AI follows a protocol instead of a prompt.
 
 Humans define the protocol. AI follows it. The protocol outlives any model.
 
@@ -31,10 +31,10 @@ Humans define the protocol. AI follows it. The protocol outlives any model.
 
 ## How it works
 
-Every Forge project contains a `.forge/` directory — the engineering brain of the repository:
+Every Repospec project contains a `.repospec/` directory — the engineering brain of the repository:
 
 ```text
-.forge/
+.repospec/
 ├── project.yaml      # what this is, who it's for, the stack
 ├── constitution.md   # non-negotiable rules and standards
 ├── architecture.md   # how the system is structured
@@ -50,7 +50,7 @@ Open any repository and the architecture, standards, workflows, and review proce
 
 ## Roles, not personas
 
-"Act like a senior engineer" is a prompt. Forge replaces it with explicit responsibilities.
+"Act like a senior engineer" is a prompt. Repospec replaces it with explicit responsibilities.
 
 A project declares which roles it needs — Architect, Builder, Reviewer, Tester, Security, Documentation, Release Manager — and what each one owns. One role, one responsibility. The AI doesn't improvise a personality; it follows a defined job.
 
@@ -67,18 +67,18 @@ Whatever assistant is driving, the engineering process is identical. The work do
 No manual setup. No copied prompts.
 
 ```bash
-forge init
+repospec init
 ```
 
-Forge interviews you — what you're building, who it's for, your stack, your standards, your testing and compliance requirements — and generates the protocol from your answers.
+Repospec interviews you — what you're building, who it's for, your stack, your standards, your testing and compliance requirements — and generates the protocol from your answers.
 
 ## Tool-agnostic by design
 
-Forge doesn't depend on any one assistant. It works with Cursor, Claude Code, Codex, Gemini CLI, VS Code, and whatever comes next. Swap the AI; the repository stays the same.
+Repospec doesn't depend on any one assistant. It works with Cursor, Claude Code, Codex, Gemini CLI, VS Code, and whatever comes next. Swap the AI; the repository stays the same.
 
 ## The standard we're building
 
-Git standardized version control. Docker standardized packaging. Forge standardizes how repositories communicate with AI.
+Git standardized version control. Docker standardized packaging. Repospec standardizes how repositories communicate with AI.
 
 This isn't another AI coding tool. It's a common language between software projects and the assistants that work on them — one that any human can read and any model can follow.
 

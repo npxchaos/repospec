@@ -1,4 +1,4 @@
-# Forge history — acme-billing
+# Repospec history — acme-billing
 
 A narrative log of significant engineering-system events. Newest first.
 
@@ -8,4 +8,4 @@ A narrative log of significant engineering-system events. Newest first.
 - Constitution v1 ratified.
 
 ## 2026-02-10
-- Forge initialized via `forge init`. Initial `.forge/` scaffold created.
+- Repospec initialized via `repospec init`. Initial `.repospec/` scaffold created.

@@ -1,4 +1,4 @@
-name: forge
+name: repospec
 on: [push, pull_request]
 
 jobs:
@@ -10,5 +10,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml
-      - name: AGENTS.md matches .forge/
-        run: python3 tools/forge_build.py examples/acme-billing --check
+      - name: AGENTS.md matches .repospec/
+        run: python3 tools/repospec_build.py examples/acme-billing --check

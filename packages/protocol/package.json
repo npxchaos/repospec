@@ -37,5 +37,18 @@
   "homepage": "https://github.com/npxchaos/repospec#readme",
   "bugs": {
     "url": "https://github.com/npxchaos/repospec/issues"
-  }
+  },
+  "keywords": [
+    "repospec",
+    "agents",
+    "agents-md",
+    "ai-agents",
+    "ai-coding",
+    "coding-agents",
+    "llm",
+    "protocol",
+    "json-schema",
+    "zod",
+    "specification"
+  ]
 }

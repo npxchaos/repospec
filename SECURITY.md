@@ -7,7 +7,7 @@ issue.
 
 - Use [GitHub Security Advisories](https://github.com/npxchaos/repospec/security/advisories/new)
   to report privately, or
-- email **security@repospec.dev**.
+- email **hi@thiago.pin.to**.
 
 We will acknowledge your report, investigate, and keep you informed of progress.
 Please give us a reasonable window to release a fix before any public

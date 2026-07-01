@@ -1,5 +1,9 @@
 # Repospec
 
+[![CI](https://github.com/npxchaos/repospec/actions/workflows/ci.yml/badge.svg)](https://github.com/npxchaos/repospec/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@repospec/cli.svg)](https://www.npmjs.com/package/@repospec/cli)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 > An open, repository-first **specification** that standardizes how AI coding
 > assistants understand, build, and evolve a software project — without prompts.
 
@@ -13,29 +17,31 @@ one editor. The **specification is the product**; the CLI is one implementation
 of it.
 
 ```bash
-repospec init      # interview → generate a complete .repospec/ + tool entrypoints
+npx @repospec/cli init   # interview → generate a complete .repospec/ + tool entrypoints
 ```
 
 ## Project status
 
-🛠️ **Working alpha.** The specification is authored and the reference toolchain
-runs end-to-end: `repospec init` generates a complete `.repospec/` plus assistant
-entrypoints, and `repospec doctor` / `repospec sync` / `repospec generate` maintain them.
-Milestones S, 0, 1, 2, and 3 are complete (see [`TODO.md`](./TODO.md)).
+🛠️ **Working alpha, published on npm.** The specification is authored and the
+reference toolchain runs end-to-end: `repospec init` generates a complete
+`.repospec/` plus assistant entrypoints, and `repospec doctor` / `repospec sync` /
+`repospec generate` maintain them. Milestones S, 0, 1, 2, and 3 are complete (see
+[`TODO.md`](./TODO.md)).
 
 ## Quickstart
 
 ```bash
-# from the repo root
-pnpm install && pnpm build
+# run without installing
+npx @repospec/cli init
 
-# in any project directory
-node /path/to/repospec/packages/cli/dist/bin.js init
+# or install the CLI
+npm install -g @repospec/cli      # or: pnpm add -g @repospec/cli
+repospec init
 
-# or non-interactively
-repospec init --yes --name my-app --type application --languages typescript --adapters claude,cursor
+# non-interactively
+repospec init --yes --name my-app --type application --languages typescript --adapters claude,agents
 repospec doctor          # validate .repospec/
-repospec sync            # regenerate CLAUDE.md, .cursor/rules, … from .repospec/
+repospec sync            # regenerate AGENTS.md / CLAUDE.md from .repospec/
 repospec sync --check    # CI: fail if entrypoints drift from .repospec/
 ```
 
@@ -78,8 +84,8 @@ specification — and any other tool built against it — would still stand. Tha
 the test of a standard.
 
 A single authored `.repospec/` is projected into each assistant's native entrypoint
-(`CLAUDE.md`, `.cursor/rules/*`, Copilot instructions) by **adapters**, and kept
-current by `repospec sync`.
+by **adapters** — `AGENTS.md` and `CLAUDE.md` today, with Cursor, Copilot, and
+others planned — and kept current by `repospec sync`.
 
 ## Reference implementation (TypeScript)
 
@@ -96,9 +102,9 @@ implement it (see [`spec/versioning.md`](./spec/versioning.md)).
 ## Contributing
 
 Repospec is built to welcome thousands of contributors. See
+[`CONTRIBUTING.md`](./CONTRIBUTING.md) and
 [`docs/governance.md`](./docs/governance.md) for the change process: **code
 changes via PR; protocol changes via RFC** ([`spec/rfcs/`](./spec/rfcs/)).
-`CONTRIBUTING.md` lands with Milestone 0.
 
 ## License
 

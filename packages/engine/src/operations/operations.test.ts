@@ -185,4 +185,18 @@ describe('doctor', () => {
     expect((await doctor(fs, { cwd: ROOT })).ok).toBe(true);
     expect((await doctor(fs, { cwd: ROOT, strict: true })).ok).toBe(false);
   });
+
+  it('warns on a duplicate declared plugin (validation, no execution)', async () => {
+    const { fs } = await freshInit();
+    const path = `${ROOT}/.repospec/project.yaml`;
+    const yaml = await fs.readFile(path);
+    await fs.writeFile(
+      path,
+      yaml.replace(/plugins:.*$/m, 'plugins:\n  - id: dup\n  - id: dup\n'),
+    );
+    const report = await doctor(fs, { cwd: ROOT });
+    expect(
+      report.issues.some((i) => i.message.includes('Duplicate plugin')),
+    ).toBe(true);
+  });
 });

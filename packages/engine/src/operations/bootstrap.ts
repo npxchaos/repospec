@@ -25,6 +25,7 @@ interface PackageJson {
   exports?: unknown;
   private?: boolean;
   workspaces?: unknown;
+  engines?: Record<string, string>;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -157,8 +158,14 @@ export async function inferProjectInput(
   // --- runtimes ----------------------------------------------------------
   const runtimes: string[] = [];
   if (pkg) {
-    runtimes.push('node');
-    evidence.push('runtime node (package.json)');
+    const nodeMajor = /(\d+)/.exec(pkg.engines?.node ?? '')?.[1];
+    const runtime = nodeMajor ? `node${nodeMajor}` : 'node';
+    runtimes.push(runtime);
+    evidence.push(
+      nodeMajor
+        ? `runtime ${runtime} (package.json engines.node)`
+        : 'runtime node (package.json)',
+    );
   }
 
   // --- frameworks / testing ---------------------------------------------

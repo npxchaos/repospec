@@ -94,6 +94,25 @@ async function checkCodeDrift(
     });
   }
 
+  const declaredRt = new Set((declared.runtimes ?? []).map(lc));
+  const inferredRt = new Set((input.runtimes ?? []).map(lc));
+  for (const rt of declaredRt) {
+    if (!inferredRt.has(rt)) {
+      issues.push({
+        level: 'warning',
+        message: `project.yaml declares runtime "${rt}", but the repo shows no sign of it.`,
+      });
+    }
+  }
+  for (const rt of inferredRt) {
+    if (!declaredRt.has(rt)) {
+      issues.push({
+        level: 'warning',
+        message: `Runtime "${rt}" is used by the repo but not declared in project.yaml.`,
+      });
+    }
+  }
+
   const declaredFw = new Set((declared.frameworks ?? []).map(lc));
   const inferredFw = new Set((input.frameworks ?? []).map(lc));
   for (const fw of declaredFw) {
@@ -206,6 +225,19 @@ export async function doctor(
         message: `Unknown adapter "${adapter.id}" — it will be skipped.`,
       });
     }
+  }
+
+  // Plugins are declarative only — no code is executed (spec/configuration.md
+  // §3.7). Validate their references without running anything.
+  const seenPlugins = new Set<string>();
+  for (const plugin of repo.project.plugins) {
+    if (seenPlugins.has(plugin.id)) {
+      issues.push({
+        level: 'warning',
+        message: `Duplicate plugin "${plugin.id}" declared in project.yaml.`,
+      });
+    }
+    seenPlugins.add(plugin.id);
   }
 
   const adapterPlan = await planAdapterWrites(fs, root, repo, { registry });

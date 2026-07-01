@@ -34,7 +34,7 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 
 ## ▸ Milestone 3 — Phase 5: Config files & adapters — ✅ DONE
 - [x] 3.1 `engine`: adapter registry + interface (ADR-0003)
-- [x] 3.2 Adapters: Claude (`CLAUDE.md`), `AGENTS.md`, Cursor, Copilot
+- [x] 3.2 Adapters: Claude (`CLAUDE.md`), `AGENTS.md`, Cursor, Copilot, Windsurf, Gemini
 - [x] 3.3 `repospec generate`
 - [x] 3.4 `repospec sync` with ownership guard + `--check` (ADR-0004)
 - [x] 3.5 `repospec doctor`
@@ -45,21 +45,25 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 - [ ] 4.3 Template authoring docs
 
 ## ▸ Milestone 5 — Phase 7: Protocol validation & schema
-- [ ] 5.1 Generate JSON Schema from zod → `spec/schema/0.1/` (ADR-0005)
+- [x] 5.1 Generate JSON Schema from zod → `schemas/0.1/` (ADR-0005), CI drift-guard
 - [ ] 5.2 Conformance test suite (fixtures validated against the spec)
-- [ ] 5.3 `repospec upgrade` skeleton + version-mismatch errors (ADR-0002)
+- [x] 5.3 `repospec upgrade` + version-mismatch handling (ADR-0002)
 - [ ] 5.4 Reconcile generated schema with `spec/*.md` (drift snapshot)
       _(normative prose spec + RFC scaffolding delivered in Milestone S)_
 
 ## ▸ Milestone 6 — Phase 8: Plugins (declarative first)
-- [ ] 6.1 Declarative plugin schema
+- [x] 6.1 Declarative plugin schema (`PluginRefSchema`)
 - [ ] 6.2 **Security ADR for plugin runtime** (blocks code execution)
-- [ ] 6.3 Plugin discovery + validation (no execution) + `SECURITY.md`
+- [x] 6.3 Plugin discovery + validation (no execution) + `SECURITY.md`
 
 ## ▸ Milestone 7 — Phase 9: AI-powered bootstrap (opt-in)
-- [ ] 7.1 Repo analysis → draft answers (offline heuristics)
+- [x] 7.1 Repo analysis → draft answers (offline heuristics) — `repospec bootstrap`
 - [ ] 7.2 Optional AI provider behind explicit flag + redaction/consent
-- [ ] 7.3 Human approval gate before writing
+- [x] 7.3 Human approval gate before writing (bootstrap consent prompt)
+
+_Beyond the original roadmap:_ `repospec review` / `repospec architect` (AI-assisted,
+via an injectable `LlmClient`), and heuristic code ⇄ `.repospec/` drift detection in
+`doctor` (`--strict` gates it in CI)._
 
 ---
 
@@ -69,11 +73,14 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 - [ ] A Changeset is included for user-facing changes
 - [ ] Respects ownership model (ADR-0004) and protocol versioning (ADR-0002)
 
-## Current state (2026-06-27)
-**Milestones S, 0, 1, 2, and 3 are complete.** `repospec init`, `repospec doctor`,
-`repospec sync` (with `--check` and the ownership guard), and `repospec generate` all
-work end-to-end. The protocol schemas validate `.repospec/`, four adapters render
-tool entrypoints (Claude, AGENTS.md, Cursor, Copilot), and 27 tests cover the
-flows. Next: **Milestone 5** — generate the JSON Schema from zod and add the
-`repospec upgrade` skeleton. (Milestone 4's adapters shipped early; interpolation
-and authoring docs remain.)
+## Current state (2026-07-01)
+**The full command surface is implemented:** `init`, `bootstrap`, `generate`,
+`sync` (`--check` + ownership guard), `doctor` (`--strict`, with code-drift
+detection), `upgrade`, `review`, and `architect`. Six adapters render tool
+entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
+is generated from zod and drift-guarded in CI. Packages are published to npm and
+released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
+
+**Remaining:** template interpolation (4.1), a conformance suite (5.2), the plugin
+security ADR that would unblock plugin _execution_ (6.2 — plugins are
+declarative-only today), and AI-assisted bootstrap (7.2).

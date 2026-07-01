@@ -9,6 +9,7 @@ function seed(): MemoryFileSystem {
     '/repo/package.json': JSON.stringify({
       name: '@acme/widget',
       description: 'A widget service.',
+      engines: { node: '>=20.10.0' },
       dependencies: { '@nestjs/core': '^10' },
       devDependencies: {
         vitest: '^3',
@@ -29,7 +30,7 @@ describe('inferProjectInput', () => {
     expect(input.description).toBe('A widget service.');
     expect(input.languages).toContain('typescript');
     expect(input.packageManager).toBe('pnpm');
-    expect(input.runtimes).toContain('node');
+    expect(input.runtimes).toContain('node20'); // from engines.node
     expect(input.frameworks).toContain('nestjs');
     expect(input.testing).toContain('vitest');
     expect(input.formatter).toBe('prettier');

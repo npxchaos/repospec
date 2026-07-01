@@ -81,5 +81,17 @@ export function renderAssistantGuide(repo: RepospecRepository): string {
     lines.push('');
   }
 
+  const plugins = project.plugins ?? [];
+  if (plugins.length > 0) {
+    lines.push('## Plugins');
+    lines.push('');
+    lines.push('Declared extensions (declarative only — no plugin code runs):');
+    lines.push('');
+    for (const plugin of plugins) {
+      lines.push(`- ${plugin.id}${plugin.version ? `@${plugin.version}` : ''}`);
+    }
+    lines.push('');
+  }
+
   return `${lines.join('\n').trimEnd()}\n`;
 }

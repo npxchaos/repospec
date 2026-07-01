@@ -161,4 +161,18 @@ describe('doctor', () => {
       true,
     );
   });
+
+  it('warns when the code drifts from the declared stack', async () => {
+    const { fs } = await freshInit(); // declares typescript, no frameworks
+    await fs.writeFile(
+      `${ROOT}/package.json`,
+      JSON.stringify({ name: 'acme', dependencies: { next: '^14' } }),
+    );
+    const report = await doctor(fs, { cwd: ROOT });
+    const messages = report.issues.map((i) => i.message).join('\n');
+    // A framework present in deps but absent from project.yaml is flagged...
+    expect(messages).toContain('nextjs');
+    // ...and drift is a warning, not an error.
+    expect(report.ok).toBe(true);
+  });
 });

@@ -7,6 +7,7 @@ describe('createProgram', () => {
       .commands.map((c) => c.name())
       .sort();
     expect(names).toContain('init');
+    expect(names).toContain('bootstrap');
     expect(names).toContain('doctor');
     expect(names).toContain('sync');
     expect(names).toContain('generate');

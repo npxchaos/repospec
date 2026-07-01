@@ -14,7 +14,7 @@ import { registerBootstrap } from './commands/bootstrap.js';
 import { registerMaintenance } from './commands/maintenance.js';
 import { registerStubs } from './commands/stubs.js';
 
-const CLI_VERSION = '0.0.0';
+const CLI_VERSION = __CLI_VERSION__;
 
 /**
  * Build the `repospec` command tree.

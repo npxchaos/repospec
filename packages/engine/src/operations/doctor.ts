@@ -11,6 +11,8 @@ import { planAdapterWrites } from '../render.js';
 import type { AdapterRegistry } from '../adapters/registry.js';
 import { defaultRegistry } from '../adapters/registry.js';
 import { findRepoRoot } from '../locate.js';
+import { inferProjectInput } from './bootstrap.js';
+import type { RepospecRepository } from '@repospec/protocol';
 
 /** A single problem found by {@link doctor}. */
 export interface DoctorIssue {
@@ -34,6 +36,80 @@ export interface DoctorOptions {
   cwd?: string;
   /** Adapter registry to use. Default: built-ins. */
   registry?: AdapterRegistry;
+}
+
+const lc = (s: string): string => s.toLowerCase();
+
+/**
+ * Heuristic detection of drift between the code and its `.repospec/` description
+ * (the `spec/` §10 open problem — a first cut). Only runs for repositories with
+ * a package.json, where offline inference is reliable, and only emits warnings,
+ * never errors, because the inference is necessarily incomplete.
+ *
+ * @param fs - The filesystem to inspect.
+ * @param root - The repository root.
+ * @param repo - The validated repository.
+ * @param issues - The issue list to append warnings to.
+ */
+async function checkCodeDrift(
+  fs: RepospecFileSystem,
+  root: string,
+  repo: RepospecRepository,
+  issues: DoctorIssue[],
+): Promise<void> {
+  if (!(await fs.exists(join(root, 'package.json')))) return;
+
+  const { input } = await inferProjectInput(fs, root);
+  const declared = repo.project.stack;
+
+  const declaredLangs = new Set(declared.languages.map(lc));
+  const inferredLangs = new Set(input.languages.map(lc));
+  for (const lang of declaredLangs) {
+    if (!inferredLangs.has(lang)) {
+      issues.push({
+        level: 'warning',
+        message: `project.yaml declares language "${lang}", but it was not detected in the repo.`,
+      });
+    }
+  }
+  for (const lang of inferredLangs) {
+    if (!declaredLangs.has(lang)) {
+      issues.push({
+        level: 'warning',
+        message: `Language "${lang}" is used in the repo but not declared in project.yaml.`,
+      });
+    }
+  }
+
+  if (
+    input.packageManager &&
+    declared.packageManager &&
+    lc(input.packageManager) !== lc(declared.packageManager)
+  ) {
+    issues.push({
+      level: 'warning',
+      message: `project.yaml declares packageManager "${declared.packageManager}", but the repo uses "${input.packageManager}".`,
+    });
+  }
+
+  const declaredFw = new Set((declared.frameworks ?? []).map(lc));
+  const inferredFw = new Set((input.frameworks ?? []).map(lc));
+  for (const fw of declaredFw) {
+    if (!inferredFw.has(fw)) {
+      issues.push({
+        level: 'warning',
+        message: `project.yaml declares framework "${fw}", but it is not in the dependencies.`,
+      });
+    }
+  }
+  for (const fw of inferredFw) {
+    if (!declaredFw.has(fw)) {
+      issues.push({
+        level: 'warning',
+        message: `Framework "${fw}" is in the dependencies but not declared in project.yaml.`,
+      });
+    }
+  }
 }
 
 /**
@@ -124,6 +200,8 @@ export async function doctor(
       });
     }
   }
+
+  await checkCodeDrift(fs, root, repo, issues);
 
   return { ok: !issues.some((i) => i.level === 'error'), root, issues };
 }

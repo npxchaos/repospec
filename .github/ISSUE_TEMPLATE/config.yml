@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Protocol change (RFC)
+    url: https://github.com/npxchaos/repospec/blob/main/spec/rfcs/0000-template.md
+    about: Changing the .repospec/ format or its semantics? Open an RFC, not an issue.
+  - name: Security report
+    url: https://github.com/npxchaos/repospec/security/advisories/new
+    about: Report vulnerabilities privately. Do not open a public issue.

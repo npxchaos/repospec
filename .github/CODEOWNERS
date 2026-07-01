@@ -1,0 +1,13 @@
+# Code ownership for review routing.
+# See docs/governance.md for the roles referenced here.
+
+# Default owner for everything.
+*                       @npxchaos
+
+# The specification and its executable form require a protocol steward.
+/spec/                  @npxchaos
+/packages/protocol/     @npxchaos
+
+# Architecture decisions and governance.
+/docs/adr/              @npxchaos
+/docs/governance.md     @npxchaos

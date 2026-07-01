@@ -1,13 +1,34 @@
-name: acme-billing
-summary: Usage-based billing service for the Acme platform.
-users: Internal finance team plus the public billing API.
+# yaml-language-server: $schema=https://repospec.dev/schema/0.1/project.schema.json
+repospecProtocol: "0.1"
+project:
+  name: acme-billing
+  description: Usage-based billing service for the Acme platform.
+  type: service
+  repository: https://github.com/npxchaos/repospec
 stack:
-  language: TypeScript
-  runtime: Node 20
-  framework: NestJS
-  datastore: PostgreSQL
-deploy:
-  target: AWS ECS
-  pipeline: GitHub Actions
-compliance: [SOC2, PCI-DSS]
-roles: [architect, builder, reviewer, tester, security, release]
+  languages:
+    - typescript
+  runtimes:
+    - node20
+  packageManager: pnpm
+  frameworks:
+    - nestjs
+  testing:
+    - vitest
+conventions:
+  formatter: prettier
+  linter: eslint
+  commitStyle: conventional
+  branching: trunk
+documents:
+  constitution: constitution.md
+  architecture: architecture.md
+  workflow: workflow.md
+agents:
+  dir: agents
+rules:
+  dir: rules
+adapters:
+  - id: claude
+  - id: agents
+plugins: []

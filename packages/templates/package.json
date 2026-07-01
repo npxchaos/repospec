@@ -1,0 +1,31 @@
+{
+  "name": "@repospec/templates",
+  "version": "0.0.0",
+  "description": "Default content and adapter templates the Repospec protocol is seeded from.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repospec/protocol": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

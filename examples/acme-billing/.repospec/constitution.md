@@ -1,12 +1,14 @@
 # Constitution — acme-billing
 
-These rules are non-negotiable. Every change, human or agent, obeys them.
+Non-negotiable principles. Every change obeys these; they outrank convenience.
 
-1. Small steps over large rewrites. Prefer the smallest change that ships value.
-2. Tests precede implementation for any code touching billing math (see `rules/testing.md`).
-3. A human approves every change under `deploy/` and `migrations/`.
-4. Secrets never enter the repo, the logs, or agent output (see `rules/security.md`).
-5. Money is integer cents. Never floats. Never.
-6. Every externally observable behavior change is recorded in `history/`, and if architectural, in `decisions/`.
-
-Humans amend this file. Agents obey it and never edit it.
+- **Small steps over large rewrites.** Prefer the smallest change that solves the
+  problem.
+- **Tests precede implementation for billing math.** Any code that computes money
+  starts with a failing test.
+- **A human approves every change to `deploy/` or `migrations/`.** These are gated;
+  an agent may propose but not clear the gate.
+- **Secrets never enter the repo, the logs, or an agent's output.** No card data,
+  no credentials, no tokens.
+- **Settled decisions are not re-litigated.** Read the architecture before proposing
+  a structural change.

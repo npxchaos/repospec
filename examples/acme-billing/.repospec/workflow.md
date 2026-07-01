@@ -1,23 +1,19 @@
-# Workflow
+# Workflow — acme-billing
 
-```
-Plan → Design → Implement → Review → Validate → Document → Release → Sync
-```
+Work moves through these steps in order. A step can't be skipped, and a human gate
+can't be auto-cleared.
 
-Each step has an owning role, entry/exit criteria, and may be a human gate.
+| Step | Owner | Human gate |
+| ---- | ----- | ---------- |
+| Plan | architect | yes |
+| Design | architect | no |
+| Implement | builder | no |
+| Review | reviewer | no |
+| Validate | tester | no |
+| Security check | security | no |
+| Release | release | yes |
 
-| Step      | Owner     | Entry                | Exit                                   | Human gate |
-|-----------|-----------|----------------------|----------------------------------------|:----------:|
-| Plan      | architect | a problem statement  | agreed scope + acceptance criteria     | yes |
-| Design    | architect | agreed scope         | interfaces + affected decisions noted  | no  |
-| Implement | builder   | design               | code + tests written                   | no  |
-| Review    | reviewer  | implement complete   | diff approved or sent back             | no  |
-| Validate  | tester    | review approved      | full suite green; acceptance met       | no  |
-| Document  | builder   | validate passed      | history/ updated; ADR if architectural | no  |
-| Release   | release   | document complete    | deployed + tagged                      | yes |
-| Sync      | release   | release done         | AGENTS.md recompiled; branch merged    | no  |
-
-Rules:
-- A step cannot be skipped.
-- A human gate cannot be auto-cleared by an agent.
-- Any role may escalate to a human at any step.
+- **Plan** and **Release** are human gates: a person signs off before work proceeds.
+- Each step hands off to the next only when its exit criteria are met.
+- Changes to `deploy/` or `migrations/` require explicit human approval regardless
+  of step (see the constitution).

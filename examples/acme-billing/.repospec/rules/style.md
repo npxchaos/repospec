@@ -1,6 +1,9 @@
-# Style rules
+---
+id: style
+title: Consistent, formatted, conventional
+severity: warning
+rationale: Uniform style keeps diffs about behavior, not formatting.
+---
 
-- TypeScript strict mode; no `any` without a written reason.
-- Money is integer cents — there is no float currency type.
-- Functions do one thing; modules own one concern.
-- Names say what, not how. No abbreviations that aren't domain terms.
+Code is formatted with Prettier and passes ESLint before review. Commits follow the
+Conventional Commits style. Prefer clear names over comments that restate the code.

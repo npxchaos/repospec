@@ -1,6 +1,10 @@
-# Testing rules
+---
+id: testing
+title: Billing math is test-first
+severity: error
+rationale: Money computed without a test regresses silently and invisibly.
+---
 
-- Billing math is tested first: write the failing test, then the code.
-- Money is integer cents in tests too; assert exact values, never approximate.
-- Every bug fix ships with a regression test that fails before the fix.
-- The full suite must pass before Validate clears.
+Any change under `rating/` or `invoicing/` starts with a failing test that pins the
+expected amount. Bug fixes begin with a test that reproduces the wrong number. A
+change to billing math without an accompanying test is rejected at review.

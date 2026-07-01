@@ -1,5 +1,35 @@
 # @repospec/engine
 
+## 0.9.0
+
+### Minor Changes
+
+- d1b48e8: Add three built-in adapters — **Zed** (`.rules`), **Cline**
+  (`.clinerules/repospec.md`), and **Continue** (`.continue/rules/repospec.md`) —
+  bringing the total to nine. Paths verified against each tool's current
+  documentation. Enable them in `project.yaml` `adapters` (or via `repospec init`).
+- 185af5c: `bootstrap` now seeds the prose documents from a repository's existing docs
+  instead of leaving generic templates. Offline and local-only: `architecture.md`
+  is filled from `ARCHITECTURE.md` (and similar), `workflow.md` from
+  `CONTRIBUTING.md`, `constitution.md` from `PRINCIPLES.md`/`ACTION_PLAN.md`, and
+  so on — the first existing, non-empty match is imported verbatim under a
+  provenance note (its own top-level title stripped). The result is a draft you
+  own and edit. Pass `--no-import-docs` to fall back to the templates. Engine adds
+  `harvestProse` and a `seedOverrides` option on `planInit`.
+- 7891ea3: `repospec doctor` now detects **rule-target drift**: a rule whose `appliesTo`
+  globs match no files in the repository is flagged, since it targets code that no
+  longer exists. This extends drift detection past the stack into the `.repospec/`
+  artifacts themselves. It only runs when a rule declares `appliesTo` (repositories
+  that don't use it pay nothing), and — like other drift — it's a warning that
+  `--strict` promotes to a CI failure.
+
+### Patch Changes
+
+- Updated dependencies [d1b48e8]
+- Updated dependencies [7891ea3]
+  - @repospec/protocol@0.9.0
+  - @repospec/templates@0.9.0
+
 ## 0.8.0
 
 ### Minor Changes

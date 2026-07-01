@@ -46,14 +46,14 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 
 ## ▸ Milestone 5 — Phase 7: Protocol validation & schema
 - [x] 5.1 Generate JSON Schema from zod → `schemas/0.1/` (ADR-0005), CI drift-guard
-- [ ] 5.2 Conformance test suite (fixtures validated against the spec)
+- [x] 5.2 Conformance test suite (examples + fixtures validated against the schemas)
 - [x] 5.3 `repospec upgrade` + version-mismatch handling (ADR-0002)
 - [ ] 5.4 Reconcile generated schema with `spec/*.md` (drift snapshot)
       _(normative prose spec + RFC scaffolding delivered in Milestone S)_
 
 ## ▸ Milestone 6 — Phase 8: Plugins (declarative first)
 - [x] 6.1 Declarative plugin schema (`PluginRefSchema`)
-- [ ] 6.2 **Security ADR for plugin runtime** (blocks code execution)
+- [x] 6.2 **Security ADR for plugin runtime** — [ADR-0008](./docs/adr/0008-plugin-runtime-security.md) (execution stays blocked until its controls ship)
 - [x] 6.3 Plugin discovery + validation (no execution) + `SECURITY.md`
 
 ## ▸ Milestone 7 — Phase 9: AI-powered bootstrap (opt-in)
@@ -81,6 +81,6 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Remaining:** template interpolation (4.1), a conformance suite (5.2), the plugin
-security ADR that would unblock plugin _execution_ (6.2 — plugins are
-declarative-only today), and AI-assisted bootstrap (7.2).
+**Remaining:** template interpolation (4.1), AI-assisted bootstrap (7.2), and the
+plugin _runtime_ that [ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates
+(plugins are declarative-only today).

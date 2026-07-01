@@ -15,6 +15,7 @@ Use [`template.md`](./template.md) for new records. Number sequentially.
 | [0005](./0005-validation-zod-and-json-schema.md) | Validation via zod with published JSON Schema | Accepted |
 | [0006](./0006-template-distribution.md) | Bundled, offline-first template distribution | Accepted |
 | [0007](./0007-specification-first-architecture.md) | Specification-first architecture (Specification → Engine → CLI) | Accepted |
+| [0008](./0008-plugin-runtime-security.md) | Plugin runtime security (trust and sandbox model) | Accepted |
 
 ## When to write an ADR
 

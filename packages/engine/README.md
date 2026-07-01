@@ -19,8 +19,8 @@ embeddable in any front-end — the CLI, an editor extension, or a CI action
   `review`/`architect`/`bootstrap` AI assist are provider-agnostic and testable
   with a fake.
 - **Filesystems:** `NodeFileSystem` and `MemoryFileSystem` (`RepospecFileSystem`).
-- **Adapters:** `Adapter`, `AdapterRegistry`, and six built-ins — `claude`,
-  `agents`, `copilot`, `cursor`, `windsurf`, `gemini`.
+- **Adapters:** `Adapter`, `AdapterRegistry`, and nine built-ins — `claude`,
+  `agents`, `copilot`, `cursor`, `windsurf`, `gemini`, `zed`, `cline`, `continue`.
 - **Plugin runtime (gated):** `runPlugins`, `resolvePlugins`, `buildApprovalLock`,
   `integrityOf` — approved, integrity-pinned plugins run in a worker sandbox
   (ADR-0008/0009).

@@ -29,6 +29,9 @@ export {
   cursorAdapter,
   windsurfAdapter,
   geminiAdapter,
+  zedAdapter,
+  clineAdapter,
+  continueAdapter,
 } from './adapters/builtin.js';
 
 // Managed-file helpers (ownership model)

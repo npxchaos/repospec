@@ -52,6 +52,31 @@ export const geminiAdapter: Adapter = {
   render: (repo) => [{ path: 'GEMINI.md', body: renderAssistantGuide(repo) }],
 };
 
+/** Adapter for Zed, emitting the project `.rules` file it auto-includes. */
+export const zedAdapter: Adapter = {
+  id: 'zed',
+  description: 'Zed — generates .rules',
+  render: (repo) => [{ path: '.rules', body: renderAssistantGuide(repo) }],
+};
+
+/** Adapter for Cline, emitting `.clinerules/repospec.md` (merged with siblings). */
+export const clineAdapter: Adapter = {
+  id: 'cline',
+  description: 'Cline — generates .clinerules/repospec.md',
+  render: (repo) => [
+    { path: '.clinerules/repospec.md', body: renderAssistantGuide(repo) },
+  ],
+};
+
+/** Adapter for Continue, emitting `.continue/rules/repospec.md`. */
+export const continueAdapter: Adapter = {
+  id: 'continue',
+  description: 'Continue — generates .continue/rules/repospec.md',
+  render: (repo) => [
+    { path: '.continue/rules/repospec.md', body: renderAssistantGuide(repo) },
+  ],
+};
+
 /** All adapters that ship with the engine. */
 export const builtinAdapters: Adapter[] = [
   claudeAdapter,
@@ -60,4 +85,7 @@ export const builtinAdapters: Adapter[] = [
   cursorAdapter,
   windsurfAdapter,
   geminiAdapter,
+  zedAdapter,
+  clineAdapter,
+  continueAdapter,
 ];

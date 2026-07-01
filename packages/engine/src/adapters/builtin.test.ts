@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { buildProject } from '../project.js';
-import { builtinAdapters, windsurfAdapter, geminiAdapter } from './builtin.js';
+import {
+  builtinAdapters,
+  windsurfAdapter,
+  geminiAdapter,
+  zedAdapter,
+  clineAdapter,
+  continueAdapter,
+} from './builtin.js';
 
 const repo = {
   project: buildProject({
@@ -24,6 +31,9 @@ describe('builtin adapters', () => {
         'cursor',
         'windsurf',
         'gemini',
+        'zed',
+        'cline',
+        'continue',
       ]),
     );
   });
@@ -38,5 +48,13 @@ describe('builtin adapters', () => {
   it('gemini renders GEMINI.md', () => {
     const out = geminiAdapter.render(repo);
     expect(out[0]?.path).toBe('GEMINI.md');
+  });
+
+  it('zed / cline / continue render their native paths', () => {
+    expect(zedAdapter.render(repo)[0]?.path).toBe('.rules');
+    expect(clineAdapter.render(repo)[0]?.path).toBe('.clinerules/repospec.md');
+    expect(continueAdapter.render(repo)[0]?.path).toBe(
+      '.continue/rules/repospec.md',
+    );
   });
 });

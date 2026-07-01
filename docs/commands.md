@@ -34,7 +34,7 @@ from the current working directory.
 
 | Command | What it does |
 | --- | --- |
-| `repospec doctor [--strict]` | Validate `.repospec/` and report problems. Detects: missing referenced documents, unknown adapters, duplicate plugins, generated-output drift, and **code ⇄ `.repospec/` drift** (declared stack vs. what the repo actually contains — languages, runtimes, package manager, frameworks, testing tools). Warnings don't fail by default; `--strict` makes any warning a failure, so CI can gate on drift. |
+| `repospec doctor [--strict]` | Validate `.repospec/` and report problems. Detects: missing referenced documents, unknown adapters, duplicate plugins, generated-output drift, **code ⇄ `.repospec/` drift** (declared stack vs. what the repo actually contains — languages, runtimes, package manager, frameworks, testing tools), and **rule-target drift** (a rule whose `appliesTo` globs match no files — it targets code that no longer exists). Warnings don't fail by default; `--strict` makes any warning a failure, so CI can gate on drift. |
 
 ## Evolution
 

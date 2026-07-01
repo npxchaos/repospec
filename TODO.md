@@ -62,8 +62,9 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 - [x] 7.3 Human approval gate before writing (bootstrap consent prompt)
 
 _Beyond the original roadmap:_ `repospec review` / `repospec architect` (AI-assisted,
-via an injectable `LlmClient`), and heuristic code ⇄ `.repospec/` drift detection in
-`doctor` (`--strict` gates it in CI)._
+via an injectable `LlmClient`), and code ⇄ `.repospec/` drift detection in `doctor`
+(`--strict` gates it in CI) — both stack drift and **rule-target drift** (a rule
+whose `appliesTo` globs match no files)._
 
 ---
 

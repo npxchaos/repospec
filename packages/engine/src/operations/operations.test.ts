@@ -199,4 +199,29 @@ describe('doctor', () => {
       report.issues.some((i) => i.message.includes('Duplicate plugin')),
     ).toBe(true);
   });
+
+  it('warns when a rule targets paths that no longer exist (code drift)', async () => {
+    const { fs } = await freshInit();
+    await fs.writeFile(
+      `${ROOT}/.repospec/rules/legacy.md`,
+      '---\nid: legacy\ntitle: Legacy\nseverity: warning\nappliesTo:\n  - "src/legacy/**"\n---\nBody.\n',
+    );
+    const report = await doctor(fs, { cwd: ROOT });
+    expect(
+      report.issues.some((i) => i.message.includes('no files match')),
+    ).toBe(true);
+  });
+
+  it('does not warn when a rule glob matches existing files', async () => {
+    const { fs } = await freshInit();
+    await fs.writeFile(`${ROOT}/src/app.ts`, 'export const x = 1;\n');
+    await fs.writeFile(
+      `${ROOT}/.repospec/rules/app.md`,
+      '---\nid: app\ntitle: App\nseverity: warning\nappliesTo:\n  - "src/**"\n---\nBody.\n',
+    );
+    const report = await doctor(fs, { cwd: ROOT });
+    expect(
+      report.issues.some((i) => i.message.includes('no files match')),
+    ).toBe(false);
+  });
 });

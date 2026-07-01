@@ -152,6 +152,93 @@ async function checkCodeDrift(
   }
 }
 
+/** Compile a `*`/`**`/`?` glob to an anchored RegExp over posix paths. */
+function globToRegExp(glob: string): RegExp {
+  // Split on `**` (any path segments) so a single `*` stays within a segment.
+  const body = glob
+    .split('**')
+    .map((seg) =>
+      seg
+        .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*/g, '[^/]*')
+        .replace(/\?/g, '[^/]'),
+    )
+    .join('.*');
+  return new RegExp(`^${body}$`);
+}
+
+// Directories never worth walking when matching rule targets.
+const WALK_IGNORE = new Set([
+  '.git',
+  'node_modules',
+  'dist',
+  'coverage',
+  '.repospec',
+]);
+
+/** List repository files (posix-relative), skipping heavy/generated dirs. */
+async function walkRepoFiles(
+  fs: RepospecFileSystem,
+  root: string,
+): Promise<string[]> {
+  const out: string[] = [];
+  async function walk(rel: string): Promise<void> {
+    let entries: string[];
+    try {
+      entries = await fs.readdir(rel ? join(root, rel) : root);
+    } catch {
+      return;
+    }
+    for (const name of entries) {
+      if (WALK_IGNORE.has(name)) continue;
+      const childRel = rel ? `${rel}/${name}` : name;
+      try {
+        await fs.readFile(join(root, childRel));
+        out.push(childRel);
+      } catch {
+        await walk(childRel); // not a file → recurse as a directory
+      }
+    }
+  }
+  await walk('');
+  return out;
+}
+
+/**
+ * Detect code ⇄ rule drift: a rule whose `appliesTo` globs match no files in
+ * the repository targets code that no longer exists. Only runs when at least one
+ * rule declares `appliesTo`, so repositories that don't use it pay nothing.
+ *
+ * @param fs - The filesystem to inspect.
+ * @param root - The repository root.
+ * @param repo - The validated repository.
+ * @param issues - The issue list to append warnings to.
+ */
+async function checkRuleTargets(
+  fs: RepospecFileSystem,
+  root: string,
+  repo: RepospecRepository,
+  issues: DoctorIssue[],
+): Promise<void> {
+  const ruled = repo.rules.filter((r) => (r.meta.appliesTo?.length ?? 0) > 0);
+  if (ruled.length === 0) return;
+
+  const files = await walkRepoFiles(fs, root);
+  for (const rule of ruled) {
+    const globs = rule.meta.appliesTo ?? [];
+    const matched = globs.some((g) => {
+      const re = globToRegExp(g);
+      return files.some((f) => re.test(f));
+    });
+    if (!matched) {
+      issues.push({
+        level: 'warning',
+        message: `Rule "${rule.meta.id}" applies to ${globs.join(', ')}, but no files match — it may target code that no longer exists.`,
+      });
+    }
+  }
+}
+
 /**
  * Validate a repository's `.repospec/` and report problems with actionable
  * messages (see `spec/lifecycle.md` §2.4). Does not modify any files.
@@ -256,6 +343,7 @@ export async function doctor(
   }
 
   await checkCodeDrift(fs, root, repo, issues);
+  await checkRuleTargets(fs, root, repo, issues);
 
   const hasError = issues.some((i) => i.level === 'error');
   const ok = strict ? issues.length === 0 : !hasError;

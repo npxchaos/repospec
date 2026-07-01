@@ -27,6 +27,8 @@ export {
   agentsAdapter,
   copilotAdapter,
   cursorAdapter,
+  windsurfAdapter,
+  geminiAdapter,
 } from './adapters/builtin.js';
 
 // Managed-file helpers (ownership model)
@@ -74,6 +76,12 @@ export {
   requireRepoRoot,
   NoRepospecRepositoryError,
 } from './operations/locate-root.js';
+export {
+  inferProjectInput,
+  planBootstrap,
+  type BootstrapInference,
+  type BootstrapPlan,
+} from './operations/bootstrap.js';
 
 /** A summary of what this engine build supports. */
 export interface EngineInfo {

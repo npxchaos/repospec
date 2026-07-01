@@ -36,10 +36,28 @@ export const cursorAdapter: Adapter = {
   ],
 };
 
+/** Adapter for Windsurf, emitting `.windsurf/rules/repospec.md`. */
+export const windsurfAdapter: Adapter = {
+  id: 'windsurf',
+  description: 'Windsurf — generates .windsurf/rules/repospec.md',
+  render: (repo) => [
+    { path: '.windsurf/rules/repospec.md', body: renderAssistantGuide(repo) },
+  ],
+};
+
+/** Adapter for the Gemini CLI, emitting `GEMINI.md`. */
+export const geminiAdapter: Adapter = {
+  id: 'gemini',
+  description: 'Gemini CLI — generates GEMINI.md',
+  render: (repo) => [{ path: 'GEMINI.md', body: renderAssistantGuide(repo) }],
+};
+
 /** All adapters that ship with the engine. */
 export const builtinAdapters: Adapter[] = [
   claudeAdapter,
   agentsAdapter,
   copilotAdapter,
   cursorAdapter,
+  windsurfAdapter,
+  geminiAdapter,
 ];

@@ -14,11 +14,6 @@ const PLANNED: { name: string; description: string; milestone: string }[] = [
     milestone: 'later',
   },
   {
-    name: 'bootstrap',
-    description: 'Infer a draft .repospec/ from an existing repo',
-    milestone: '7',
-  },
-  {
     name: 'architect',
     description: 'AI-assisted architecture drafting',
     milestone: '7',

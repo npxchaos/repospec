@@ -84,8 +84,8 @@ specification — and any other tool built against it — would still stand. Tha
 the test of a standard.
 
 A single authored `.repospec/` is projected into each assistant's native entrypoint
-by **adapters** — `AGENTS.md` and `CLAUDE.md` today, with Cursor, Copilot, and
-others planned — and kept current by `repospec sync`.
+by **adapters** — `AGENTS.md`, `CLAUDE.md`, Cursor, GitHub Copilot, Windsurf, and
+Gemini all ship today — and kept current by `repospec sync`.
 
 ## Reference implementation (TypeScript)
 

@@ -1,6 +1,6 @@
 {
   "name": "@repospec/protocol",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "The executable Repospec Specification: types and schemas for the .repospec/ protocol.",
   "license": "MIT",
   "type": "module",

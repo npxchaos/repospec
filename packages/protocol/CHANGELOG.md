@@ -1,5 +1,21 @@
 # @repospec/protocol
 
+## 0.4.0
+
+### Minor Changes
+
+- f81d077: `repospec doctor --strict` treats warnings — including code ⇄ `.repospec/` drift —
+  as failures, so CI can gate on them. Also extend drift detection to testing tools
+  (declared `stack.testing` vs the dependencies), in both directions.
+- c06a2c7: Implement `repospec upgrade` — the protocol-migration operation (`spec/versioning.md`
+  §4). It reads the repository's declared `repospecProtocol`, compares it to what the
+  tool targets, and: reports when already current; refuses a repo declaring a newer
+  protocol; and, for an older repo, applies the chain of migrations, bumping
+  `repospecProtocol` (edits to source artifacts require consent). The migration
+  registry is empty for now — `0.1` is the first protocol version — but the mechanism
+  is complete and tested. Adds `parseProtocolVersion` / `compareProtocolVersions` to
+  `@repospec/protocol`.
+
 ## 0.3.0
 
 ### Minor Changes

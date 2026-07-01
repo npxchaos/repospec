@@ -1,5 +1,50 @@
 # @repospec/engine
 
+## 0.5.0
+
+### Minor Changes
+
+- 07bec44: Add opt-in AI assist to `repospec bootstrap` (`--ai`). When enabled, the detected
+  facts (project name + the inference evidence — metadata only, never source code)
+  are sent to the model to refine the project description; the result is still a
+  draft for human approval. `planBootstrap` gains an optional `llm` (the engine's
+  injectable `LlmClient` port), so the assist is provider-agnostic and unit-tested
+  with a fake. Offline inference remains the default. Closes roadmap 7.2.
+- 16f258c: Add the AI-assisted operations `repospec review` and `repospec architect`,
+  completing the protocol's command surface.
+
+  - `review` judges a change (a `git diff`) against the repository's constitution
+    and rules, returning structured findings; exits non-zero on an error-severity
+    finding (`--strict` for any finding).
+  - `architect` drafts or revises `.repospec/architecture.md` from the project
+    identity and current document; prints a draft, `--write` to save it.
+
+  The engine gains a small, injectable `LlmClient` port, so the operations stay
+  UI- and vendor-agnostic and unit-testable with a fake (ADR-0007). The CLI
+  supplies a Claude implementation via `@anthropic-ai/sdk` (model `claude-opus-4-8`,
+  adaptive thinking); it resolves credentials from `ANTHROPIC_API_KEY` or an
+  `ant auth login` profile. All roadmap command stubs are now implemented.
+
+- 49809e9: Plugins (declarative), deeper drift detection, and a command reference.
+
+  - **Plugins (declarative only):** `doctor` validates declared `plugins` (warns on
+    duplicates) and the generated guide now lists them, explicitly noting no plugin
+    code is executed (spec §3.7; roadmap Milestone 6 discovery + validation).
+  - **Deeper code drift:** `doctor` now also compares declared runtimes against the
+    repo, and `bootstrap` infers the Node runtime version from `package.json`
+    `engines.node` (e.g. `node20`).
+  - **Docs:** add `docs/commands.md` (full command reference) and refresh `TODO.md`
+    to the current, feature-complete command surface.
+
+### Patch Changes
+
+- Updated dependencies [07bec44]
+- Updated dependencies [16f258c]
+- Updated dependencies [49809e9]
+- Updated dependencies [93c0c91]
+  - @repospec/protocol@0.5.0
+  - @repospec/templates@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -12,8 +12,8 @@ import { engineInfo } from '@repospec/engine';
 import { registerInit } from './commands/init.js';
 import { registerBootstrap } from './commands/bootstrap.js';
 import { registerUpgrade } from './commands/upgrade.js';
+import { registerAi } from './commands/ai.js';
 import { registerMaintenance } from './commands/maintenance.js';
-import { registerStubs } from './commands/stubs.js';
 
 const CLI_VERSION = __CLI_VERSION__;
 
@@ -37,8 +37,8 @@ export function createProgram(): Command {
   registerInit(program);
   registerBootstrap(program);
   registerUpgrade(program);
+  registerAi(program);
   registerMaintenance(program);
-  registerStubs(program);
 
   return program;
 }

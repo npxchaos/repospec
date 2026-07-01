@@ -92,7 +92,7 @@ Gemini all ship today — and kept current by `repospec sync`.
 | Package | Role |
 | ------- | ---- |
 | `@repospec/protocol` | the executable specification (types + zod) |
-| `@repospec/engine` | the operations: init / generate / sync / doctor / upgrade |
+| `@repospec/engine` | the operations: init / bootstrap / generate / sync / doctor / upgrade / review / architect |
 | `@repospec/templates` | default content + adapter content |
 | `@repospec/cli` | commander + clack front-end |
 

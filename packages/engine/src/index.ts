@@ -92,6 +92,20 @@ export {
   type UpgradeStatus,
 } from './operations/upgrade.js';
 
+// AI-assisted operations (require an injected LlmClient)
+export type { LlmClient, LlmCompleteOptions } from './llm.js';
+export {
+  review,
+  type ReviewOptions,
+  type ReviewResult,
+  type ReviewFinding,
+} from './operations/review.js';
+export {
+  architect,
+  type ArchitectOptions,
+  type ArchitectResult,
+} from './operations/architect.js';
+
 /** A summary of what this engine build supports. */
 export interface EngineInfo {
   /** Protocol version this engine implements. */

@@ -82,6 +82,15 @@ export {
   type BootstrapInference,
   type BootstrapPlan,
 } from './operations/bootstrap.js';
+export {
+  upgrade,
+  planUpgrade,
+  MIGRATIONS,
+  type Migration,
+  type UpgradeOptions,
+  type UpgradeReport,
+  type UpgradeStatus,
+} from './operations/upgrade.js';
 
 /** A summary of what this engine build supports. */
 export interface EngineInfo {

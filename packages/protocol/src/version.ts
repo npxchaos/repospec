@@ -18,3 +18,41 @@ export const PROTOCOL_VERSION = '0.1' as const;
 export function supports(version: string): boolean {
   return version === PROTOCOL_VERSION;
 }
+
+/** A parsed `MAJOR.MINOR` protocol version. */
+export interface ProtocolVersion {
+  major: number;
+  minor: number;
+}
+
+/**
+ * Parse a `MAJOR.MINOR` protocol version string.
+ *
+ * @param version - e.g. `"0.1"`.
+ * @returns The parsed major/minor.
+ * @throws {Error} If the string is not `MAJOR.MINOR` of non-negative integers.
+ */
+export function parseProtocolVersion(version: string): ProtocolVersion {
+  const match = /^(\d+)\.(\d+)$/.exec(version.trim());
+  if (!match) {
+    throw new Error(
+      `Invalid protocol version "${version}" (expected MAJOR.MINOR).`,
+    );
+  }
+  return { major: Number(match[1]), minor: Number(match[2]) };
+}
+
+/**
+ * Compare two `MAJOR.MINOR` protocol versions.
+ *
+ * @param a - Left version.
+ * @param b - Right version.
+ * @returns `-1` if a < b, `0` if equal, `1` if a > b.
+ */
+export function compareProtocolVersions(a: string, b: string): number {
+  const va = parseProtocolVersion(a);
+  const vb = parseProtocolVersion(b);
+  if (va.major !== vb.major) return va.major < vb.major ? -1 : 1;
+  if (va.minor !== vb.minor) return va.minor < vb.minor ? -1 : 1;
+  return 0;
+}

@@ -4,11 +4,6 @@ import { info } from '../ui.js';
 /** Commands defined by the spec/roadmap but not yet implemented. */
 const PLANNED: { name: string; description: string; milestone: string }[] = [
   {
-    name: 'upgrade',
-    description: 'Migrate .repospec/ to a newer protocol version',
-    milestone: '5',
-  },
-  {
     name: 'review',
     description: 'Review a change against the protocol',
     milestone: 'later',

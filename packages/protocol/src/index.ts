@@ -8,7 +8,13 @@
  * @packageDocumentation
  */
 
-export { PROTOCOL_VERSION, supports } from './version.js';
+export {
+  PROTOCOL_VERSION,
+  supports,
+  parseProtocolVersion,
+  compareProtocolVersions,
+  type ProtocolVersion,
+} from './version.js';
 export { RepospecValidationError, formatZodError } from './errors.js';
 export type { RepospecFileSystem } from './fs.js';
 export {

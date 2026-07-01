@@ -11,6 +11,7 @@ import { Command } from 'commander';
 import { engineInfo } from '@repospec/engine';
 import { registerInit } from './commands/init.js';
 import { registerBootstrap } from './commands/bootstrap.js';
+import { registerUpgrade } from './commands/upgrade.js';
 import { registerMaintenance } from './commands/maintenance.js';
 import { registerStubs } from './commands/stubs.js';
 
@@ -35,6 +36,7 @@ export function createProgram(): Command {
 
   registerInit(program);
   registerBootstrap(program);
+  registerUpgrade(program);
   registerMaintenance(program);
   registerStubs(program);
 

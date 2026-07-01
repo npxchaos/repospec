@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  # GitHub Actions — one entry covers every workflow under .github/workflows.
+  # Clears the transitional "Node.js 20" runtime notices automatically once
+  # GitHub ships Node 24 majors of the Pages actions.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  # npm — root plus every workspace package (pnpm monorepo).
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /packages/*
+    schedule:
+      interval: weekly
+    groups:
+      production-dependencies:
+        dependency-type: production
+        patterns: ['*']
+      development-dependencies:
+        dependency-type: development
+        patterns: ['*']

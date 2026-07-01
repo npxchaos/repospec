@@ -1,5 +1,11 @@
 # @repospec/templates
 
+## 0.10.0
+
+### Patch Changes
+
+- @repospec/protocol@0.10.0
+
 ## 0.9.0
 
 ### Minor Changes

@@ -27,8 +27,8 @@ from the current working directory.
 | --- | --- |
 | `repospec init [--yes] [--force] [--name] [--description] [--type] [--languages] [--adapters]` | Scaffold a `.repospec/` and generate tool entrypoints. Interactive by default; `--yes` uses flags/defaults. Re-run safe — never overwrites human-owned files without `--force`. |
 | `repospec bootstrap [--yes] [--force] [--ai]` | Infer a **draft** `.repospec/` from an existing repo (package.json, lockfiles, dependencies) — offline by default, no network. Shows what it detected and writes only on approval (`--yes` to skip the prompt). `--ai` opts in to refining the description with a model; it sends only the detected metadata (name + evidence), never source code, and still produces a draft for review. |
-| `repospec generate [--force] [--only <ids>]` | Render tool entrypoints from `.repospec/`. |
-| `repospec sync [--force] [--check]` | Regenerate entrypoints, honoring the ownership model — a hand-edited output is not overwritten without `--force`. `--check` reports drift and exits non-zero (CI). |
+| `repospec generate [--force] [--only <ids>] [--plugins]` | Render tool entrypoints from `.repospec/`. `--plugins` also includes outputs from approved plugins (see Plugins below). |
+| `repospec sync [--force] [--check] [--plugins]` | Regenerate entrypoints, honoring the ownership model — a hand-edited output is not overwritten without `--force`. `--check` reports drift and exits non-zero (CI). `--plugins` includes approved plugin outputs. |
 
 ## Validation
 

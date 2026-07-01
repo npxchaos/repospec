@@ -22,8 +22,12 @@ function registerDoctor(program: Command): void {
   program
     .command('doctor')
     .description('Validate .repospec/ and report problems')
-    .action(async () => {
-      const report = await doctor(new NodeFileSystem(), { cwd: process.cwd() });
+    .option('--strict', 'treat warnings (including drift) as failures, for CI')
+    .action(async (flags: { strict?: boolean }) => {
+      const report = await doctor(new NodeFileSystem(), {
+        cwd: process.cwd(),
+        strict: flags.strict,
+      });
       if (report.issues.length === 0) {
         info('✓ Everything looks good.');
         return;

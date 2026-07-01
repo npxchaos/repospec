@@ -36,6 +36,8 @@ export interface DoctorOptions {
   cwd?: string;
   /** Adapter registry to use. Default: built-ins. */
   registry?: AdapterRegistry;
+  /** Treat warnings as failures too, so CI can gate on them. Default false. */
+  strict?: boolean;
 }
 
 const lc = (s: string): string => s.toLowerCase();
@@ -110,6 +112,25 @@ async function checkCodeDrift(
       });
     }
   }
+
+  const declaredTest = new Set((declared.testing ?? []).map(lc));
+  const inferredTest = new Set((input.testing ?? []).map(lc));
+  for (const t of declaredTest) {
+    if (!inferredTest.has(t)) {
+      issues.push({
+        level: 'warning',
+        message: `project.yaml declares testing tool "${t}", but it is not in the dependencies.`,
+      });
+    }
+  }
+  for (const t of inferredTest) {
+    if (!declaredTest.has(t)) {
+      issues.push({
+        level: 'warning',
+        message: `Testing tool "${t}" is in the dependencies but not declared in project.yaml.`,
+      });
+    }
+  }
 }
 
 /**
@@ -126,6 +147,7 @@ export async function doctor(
 ): Promise<DoctorReport> {
   const cwd = options.cwd ?? process.cwd();
   const registry = options.registry ?? defaultRegistry;
+  const strict = options.strict ?? false;
   const root = await findRepoRoot(fs, cwd);
   const issues: DoctorIssue[] = [];
 
@@ -203,5 +225,7 @@ export async function doctor(
 
   await checkCodeDrift(fs, root, repo, issues);
 
-  return { ok: !issues.some((i) => i.level === 'error'), root, issues };
+  const hasError = issues.some((i) => i.level === 'error');
+  const ok = strict ? issues.length === 0 : !hasError;
+  return { ok, root, issues };
 }

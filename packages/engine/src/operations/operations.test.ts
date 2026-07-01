@@ -175,4 +175,14 @@ describe('doctor', () => {
     // ...and drift is a warning, not an error.
     expect(report.ok).toBe(true);
   });
+
+  it('strict mode fails on drift warnings (for CI gating)', async () => {
+    const { fs } = await freshInit();
+    await fs.writeFile(
+      `${ROOT}/package.json`,
+      JSON.stringify({ name: 'acme', dependencies: { next: '^14' } }),
+    );
+    expect((await doctor(fs, { cwd: ROOT })).ok).toBe(true);
+    expect((await doctor(fs, { cwd: ROOT, strict: true })).ok).toBe(false);
+  });
 });

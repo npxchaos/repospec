@@ -78,9 +78,12 @@ network-bound `bootstrap`).
 
 - **Precondition:** Uninitialized or Initialized.
 - **Effect:** infers a *draft* `.repospec/` from an existing codebase. Offline
-  heuristics run first; an AI provider MAY be used only with explicit operator
-  opt-in and consent about what is sent. The draft is presented for human
-  review and MUST NOT be written without approval (human decisions win).
+  heuristics run first — this includes reading the repository's existing
+  documentation (e.g. `ARCHITECTURE.md`, `CONTRIBUTING.md`) to seed the prose
+  documents from real content rather than a blank template. An AI provider MAY
+  be used only with explicit operator opt-in and consent about what is sent;
+  the offline doc import never leaves the machine. The draft is presented for
+  human review and MUST NOT be written without approval (human decisions win).
 - **Postcondition:** Initialized (after human approval) or unchanged.
 
 ## 3. State transition map

@@ -27,6 +27,13 @@ export interface InitOptions {
   force?: boolean;
   /** Adapter registry to use. Default: built-ins. */
   registry?: AdapterRegistry;
+  /**
+   * Replace the contents of specific seed files, keyed by their path relative
+   * to `.repospec/` (e.g. `architecture.md`). Used by `bootstrap` to seed prose
+   * documents from a repository's existing docs instead of the generic
+   * template. Unknown keys are ignored.
+   */
+  seedOverrides?: Record<string, string>;
 }
 
 /** A planned init: the file plan plus context about the target. */
@@ -86,7 +93,12 @@ export async function planInit(
     ),
   );
 
-  const seeds = getSeedDocuments(project);
+  const overrides = options.seedOverrides ?? {};
+  const seeds = getSeedDocuments(project).map((seed) =>
+    seed.path in overrides
+      ? { ...seed, contents: overrides[seed.path] as string }
+      : seed,
+  );
   for (const seed of seeds) {
     writes.push(
       await planHumanFile(

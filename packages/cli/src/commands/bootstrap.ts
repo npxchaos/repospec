@@ -8,6 +8,7 @@ interface BootstrapFlags {
   yes?: boolean;
   force?: boolean;
   ai?: boolean;
+  importDocs?: boolean;
 }
 
 function summarize(result: {
@@ -34,7 +35,12 @@ async function runBootstrap(flags: BootstrapFlags): Promise<void> {
 
   let plan;
   try {
-    plan = await planBootstrap(fs, { cwd, force: flags.force, llm });
+    plan = await planBootstrap(fs, {
+      cwd,
+      force: flags.force,
+      llm,
+      importDocs: flags.importDocs,
+    });
   } catch (err) {
     error(describeLlmError(err));
     process.exitCode = 1;
@@ -91,6 +97,10 @@ export function registerBootstrap(program: Command): void {
     .option(
       '--ai',
       'opt in to AI refinement of the description (sends metadata)',
+    )
+    .option(
+      '--no-import-docs',
+      "don't seed prose docs from existing repo docs (e.g. ARCHITECTURE.md)",
     )
     .action(async (flags: BootstrapFlags) => {
       try {

@@ -11,7 +11,8 @@ embeddable in any front-end — the CLI, an editor extension, or a CI action
 
 ## What it provides
 
-- **Operations:** `init`/`planInit`, `bootstrap`/`planBootstrap` (+ `inferProjectInput`),
+- **Operations:** `init`/`planInit`, `bootstrap`/`planBootstrap` (+ `inferProjectInput`
+  and `harvestProse`, which seeds prose docs from a repo's existing `ARCHITECTURE.md` etc.),
   `generate`, `sync` (with `check` + ownership guard), `doctor` (with code-drift
   detection + `strict`), `upgrade`/`planUpgrade`, and the AI-assisted `review`
   and `architect`.

@@ -1,6 +1,6 @@
 import { basename, join } from 'node:path';
 import type { RepospecFileSystem } from '@repospec/protocol';
-import type { InitInput } from '../project.js';
+import { buildProject, type InitInput } from '../project.js';
 import type { LlmClient } from '../llm.js';
 import { planInit, type InitOptions, type InitPlan } from './init.js';
 
@@ -26,6 +26,127 @@ export interface BootstrapOptions extends InitOptions {
    * (`spec/lifecycle.md` §2.6). The result is still a draft for human approval.
    */
   llm?: LlmClient;
+  /**
+   * Seed the prose documents (`architecture.md`, `constitution.md`,
+   * `workflow.md`) from the repository's existing docs (e.g. `ARCHITECTURE.md`)
+   * instead of the generic template. Offline; local files only. Default `true`.
+   */
+  importDocs?: boolean;
+}
+
+/**
+ * A prose seed file mapped to the repository docs it can be harvested from,
+ * in priority order. The first existing, non-empty source wins.
+ */
+interface ProseSource {
+  /** Which `project.documents` entry this fills. */
+  key: 'architecture' | 'constitution' | 'workflow';
+  /** Title used in the generated `# <title> — <name>` heading. */
+  title: string;
+  /** Candidate repo-relative source paths, most specific first. */
+  sources: string[];
+}
+
+const PROSE_SOURCES: ProseSource[] = [
+  {
+    key: 'architecture',
+    title: 'Architecture',
+    sources: [
+      'ARCHITECTURE.md',
+      'ARCHITECTURE.markdown',
+      'docs/architecture.md',
+      'docs/architecture/README.md',
+      'docs/architecture/overview.md',
+      'docs/ARCHITECTURE.md',
+    ],
+  },
+  {
+    key: 'constitution',
+    title: 'Constitution',
+    sources: [
+      'CONSTITUTION.md',
+      'PRINCIPLES.md',
+      'ENGINEERING.md',
+      'docs/constitution.md',
+      'docs/principles.md',
+      'docs/engineering-principles.md',
+      'ACTION_PLAN.md',
+      'PLAN.md',
+    ],
+  },
+  {
+    key: 'workflow',
+    title: 'Workflow',
+    sources: [
+      'WORKFLOW.md',
+      'docs/workflow.md',
+      'docs/development.md',
+      'DEVELOPMENT.md',
+      'CONTRIBUTING.md',
+      'docs/contributing.md',
+    ],
+  },
+];
+
+/** Strip a leading YAML frontmatter block and/or first H1 from a doc body. */
+function stripLeadingHeading(body: string): string {
+  let text = body.replace(/^\uFEFF/, '');
+  // Leading YAML frontmatter.
+  const fm = /^---\n[\s\S]*?\n---\n?/.exec(text);
+  if (fm) text = text.slice(fm[0].length);
+  // First ATX H1.
+  text = text.replace(/^\s*# .*(?:\r?\n|$)/, '');
+  return text.trim();
+}
+
+/**
+ * Seed the prose documents from a repository's existing docs. Offline: reads
+ * only local files. For each prose target, the first existing, non-empty
+ * candidate is imported verbatim under a provenance note — turning a real
+ * `ARCHITECTURE.md` into `.repospec/architecture.md` rather than a blank
+ * template. The result is a draft the human owns and edits.
+ *
+ * @param fs - The repository filesystem.
+ * @param cwd - The repository root.
+ * @param input - The inferred project answers (for the project name + doc paths).
+ * @returns Overrides keyed by `.repospec/`-relative path, plus evidence.
+ */
+export async function harvestProse(
+  fs: RepospecFileSystem,
+  cwd: string,
+  input: InitInput,
+): Promise<{ overrides: Record<string, string>; evidence: string[] }> {
+  const project = buildProject(input);
+  const overrides: Record<string, string> = {};
+  const evidence: string[] = [];
+
+  for (const spec of PROSE_SOURCES) {
+    for (const rel of spec.sources) {
+      let raw: string;
+      try {
+        if (!(await fs.exists(join(cwd, rel)))) continue;
+        raw = await fs.readFile(join(cwd, rel));
+      } catch {
+        continue;
+      }
+      const body = stripLeadingHeading(raw);
+      if (!body) continue;
+      const target = project.documents[spec.key];
+      overrides[target] = [
+        `# ${spec.title} — ${project.project.name}`,
+        '',
+        `> Imported by \`repospec bootstrap\` from \`${rel}\`. A starting point —`,
+        '> review, trim, and keep it current. You own this file.',
+        '',
+        body,
+        '',
+      ].join('\n');
+      evidence.push(`${target} seeded from ${rel}`);
+      break;
+    }
+  }
+
+  return { overrides, evidence };
 }
 
 /**
@@ -294,6 +415,15 @@ export async function planBootstrap(
     }
   }
 
-  const plan = await planInit(fs, finalInput, options);
+  let seedOverrides = options.seedOverrides;
+  if (options.importDocs ?? true) {
+    const harvest = await harvestProse(fs, cwd, finalInput);
+    if (Object.keys(harvest.overrides).length > 0) {
+      seedOverrides = { ...harvest.overrides, ...options.seedOverrides };
+      finalEvidence.push(...harvest.evidence);
+    }
+  }
+
+  const plan = await planInit(fs, finalInput, { ...options, seedOverrides });
   return { ...plan, evidence: finalEvidence };
 }

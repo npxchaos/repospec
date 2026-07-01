@@ -26,9 +26,25 @@ from the current working directory.
 | Command | What it does |
 | --- | --- |
 | `repospec init [--yes] [--force] [--name] [--description] [--type] [--languages] [--adapters]` | Scaffold a `.repospec/` and generate tool entrypoints. Interactive by default; `--yes` uses flags/defaults. Re-run safe — never overwrites human-owned files without `--force`. |
-| `repospec bootstrap [--yes] [--force] [--ai]` | Infer a **draft** `.repospec/` from an existing repo (package.json, lockfiles, dependencies) — offline by default, no network. Shows what it detected and writes only on approval (`--yes` to skip the prompt). `--ai` opts in to refining the description with a model; it sends only the detected metadata (name + evidence), never source code, and still produces a draft for review. |
+| `repospec bootstrap [--yes] [--force] [--ai] [--no-import-docs]` | Infer a **draft** `.repospec/` from an existing repo (package.json, lockfiles, dependencies) — offline by default, no network. It also seeds the prose docs from your repository's existing docs when present — `architecture.md` from `ARCHITECTURE.md`, `workflow.md` from `CONTRIBUTING.md`, `constitution.md` from `PRINCIPLES.md`/`ACTION_PLAN.md`, and similar (see below) — so you start from real content, not a blank template. Pass `--no-import-docs` to skip that and use the generic templates. Shows what it detected and writes only on approval (`--yes` to skip the prompt). `--ai` opts in to refining the description with a model; it sends only the detected metadata (name + evidence), never source code or doc contents, and still produces a draft for review. |
 | `repospec generate [--force] [--only <ids>] [--plugins]` | Render tool entrypoints from `.repospec/`. `--plugins` also includes outputs from approved plugins (see Plugins below). |
 | `repospec sync [--force] [--check] [--plugins]` | Regenerate entrypoints, honoring the ownership model — a hand-edited output is not overwritten without `--force`. `--check` reports drift and exits non-zero (CI). `--plugins` includes approved plugin outputs. |
+
+### Bootstrap doc import
+
+`bootstrap` looks for your repository's existing documentation and seeds the
+matching `.repospec/` prose file from it — the first existing, non-empty match
+wins, imported verbatim under a provenance note (the source's own top-level
+title is stripped). This is offline: it reads only local files.
+
+| `.repospec/` file | Sourced from (in priority order) |
+| --- | --- |
+| `architecture.md` | `ARCHITECTURE.md`, `ARCHITECTURE.markdown`, `docs/architecture.md`, `docs/architecture/README.md`, `docs/architecture/overview.md`, `docs/ARCHITECTURE.md` |
+| `constitution.md` | `CONSTITUTION.md`, `PRINCIPLES.md`, `ENGINEERING.md`, `docs/constitution.md`, `docs/principles.md`, `docs/engineering-principles.md`, `ACTION_PLAN.md`, `PLAN.md` |
+| `workflow.md` | `WORKFLOW.md`, `docs/workflow.md`, `docs/development.md`, `DEVELOPMENT.md`, `CONTRIBUTING.md`, `docs/contributing.md` |
+
+The result is a **draft you own** — review and trim it. Pass `--no-import-docs`
+to fall back to the generic templates.
 
 ## Validation
 

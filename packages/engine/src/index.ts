@@ -81,6 +81,7 @@ export {
 } from './operations/locate-root.js';
 export {
   inferProjectInput,
+  harvestProse,
   planBootstrap,
   type BootstrapInference,
   type BootstrapPlan,

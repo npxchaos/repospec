@@ -43,7 +43,7 @@ jobs:
       - name: JSON Schema up to date
         run: |
           pnpm schema
-          git diff --exit-status schemas/ \
+          git diff --quiet schemas/ \
             || (echo "::error::schemas/ is stale — run \`pnpm schema\` and commit." && exit 1)
 
       - name: Typecheck

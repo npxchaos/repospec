@@ -1,6 +1,6 @@
 {
   "name": "@repospec/engine",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "The Repospec engine: UI-agnostic implementation of the protocol operations.",
   "license": "MIT",
   "type": "module",

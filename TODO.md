@@ -58,7 +58,7 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 
 ## ▸ Milestone 7 — Phase 9: AI-powered bootstrap (opt-in)
 - [x] 7.1 Repo analysis → draft answers (offline heuristics) — `repospec bootstrap`
-- [ ] 7.2 Optional AI provider behind explicit flag + redaction/consent
+- [x] 7.2 Optional AI provider behind explicit flag (`bootstrap --ai`; sends detected metadata only, no source)
 - [x] 7.3 Human approval gate before writing (bootstrap consent prompt)
 
 _Beyond the original roadmap:_ `repospec review` / `repospec architect` (AI-assisted,
@@ -81,7 +81,8 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Remaining:** AI-assisted bootstrap (7.2), a conformance fixture corpus beyond the
-examples (5.2 extension), and the plugin _runtime_ that
+**Remaining:** the plugin _runtime_ that
 [ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates (plugins are
-declarative-only today).
+declarative-only today), and optional depth items — a larger conformance fixture
+corpus (5.2) and richer template-authoring docs (4.3). The roadmap's command
+surface and every milestone deliverable except the gated plugin runtime are done.

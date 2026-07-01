@@ -81,6 +81,7 @@ export {
   planBootstrap,
   type BootstrapInference,
   type BootstrapPlan,
+  type BootstrapOptions,
 } from './operations/bootstrap.js';
 export {
   upgrade,

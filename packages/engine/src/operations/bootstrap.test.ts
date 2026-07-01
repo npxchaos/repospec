@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MemoryFileSystem } from '../fs/memory.js';
+import type { LlmClient } from '../llm.js';
 import { inferProjectInput, planBootstrap } from './bootstrap.js';
 
 const ROOT = '/repo';
@@ -58,5 +59,26 @@ describe('planBootstrap', () => {
     expect(plan.evidence.length).toBeGreaterThan(0);
     // Nothing is written by planning.
     expect(plan.writes.every((w) => w.action === 'create')).toBe(true);
+  });
+
+  it('refines the description via an opt-in LlmClient (metadata only)', async () => {
+    const calls: string[] = [];
+    const llm: LlmClient = {
+      async complete({ prompt }) {
+        calls.push(prompt);
+        return 'A refined widget service for metered billing.';
+      },
+    };
+    const plan = await planBootstrap(seed(), { cwd: ROOT, llm });
+
+    const projectYaml = plan.writes.find(
+      (w) => w.path === '.repospec/project.yaml',
+    )?.contents;
+    expect(projectYaml).toContain(
+      'A refined widget service for metered billing.',
+    );
+    expect(plan.evidence).toContain('description refined by AI (opt-in)');
+    // Only detected metadata is sent — never file contents.
+    expect(calls[0]).toContain('Detected facts:');
   });
 });

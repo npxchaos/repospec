@@ -1,6 +1,7 @@
 import { basename, join } from 'node:path';
 import type { RepospecFileSystem } from '@repospec/protocol';
 import type { InitInput } from '../project.js';
+import type { LlmClient } from '../llm.js';
 import { planInit, type InitOptions, type InitPlan } from './init.js';
 
 /** The result of inferring init answers from an existing repository. */
@@ -15,6 +16,39 @@ export interface BootstrapInference {
 export interface BootstrapPlan extends InitPlan {
   /** What the inference detected, for the human review step. */
   evidence: string[];
+}
+
+/** Options for {@link planBootstrap}. */
+export interface BootstrapOptions extends InitOptions {
+  /**
+   * Opt-in AI assist. When provided, the detected facts (metadata only — no
+   * source code) are sent to the model to refine the project description
+   * (`spec/lifecycle.md` §2.6). The result is still a draft for human approval.
+   */
+  llm?: LlmClient;
+}
+
+/**
+ * Ask the model for a one-sentence description from the detected facts. Only the
+ * inferred name and the human-readable evidence are sent — never file contents.
+ */
+async function refineDescription(
+  input: InitInput,
+  evidence: string[],
+  llm: LlmClient,
+): Promise<string> {
+  const system =
+    'You write one-sentence descriptions of software projects. Given detected ' +
+    'facts about a repository, output ONE concise sentence describing what the ' +
+    'project is. Output only the sentence, no preamble.';
+  const prompt = [
+    `Project name: ${input.name}`,
+    `Current description: ${input.description}`,
+    'Detected facts:',
+    ...evidence.map((e) => `- ${e}`),
+  ].join('\n');
+  const reply = await llm.complete({ system, prompt });
+  return reply.trim().split('\n')[0]?.trim() ?? '';
 }
 
 interface PackageJson {
@@ -239,15 +273,27 @@ export async function inferProjectInput(
  * the caller presents the plan for approval (human decisions win).
  *
  * @param fs - The repository filesystem.
- * @param options - Init options (cwd, force, registry).
+ * @param options - Init options plus an optional {@link LlmClient} for
+ *   AI-assisted refinement (opt-in; `spec/lifecycle.md` §2.6).
  * @returns The planned writes plus the inference evidence.
  */
 export async function planBootstrap(
   fs: RepospecFileSystem,
-  options: InitOptions = {},
+  options: BootstrapOptions = {},
 ): Promise<BootstrapPlan> {
   const cwd = options.cwd ?? process.cwd();
   const { input, evidence } = await inferProjectInput(fs, cwd);
-  const plan = await planInit(fs, input, options);
-  return { ...plan, evidence };
+
+  let finalInput = input;
+  const finalEvidence = [...evidence];
+  if (options.llm) {
+    const description = await refineDescription(input, evidence, options.llm);
+    if (description && description !== input.description) {
+      finalInput = { ...input, description };
+      finalEvidence.push('description refined by AI (opt-in)');
+    }
+  }
+
+  const plan = await planInit(fs, finalInput, options);
+  return { ...plan, evidence: finalEvidence };
 }

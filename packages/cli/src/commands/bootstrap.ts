@@ -1,11 +1,13 @@
 import type { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { NodeFileSystem, applyPlan, planBootstrap } from '@repospec/engine';
+import { createLlmClient, describeLlmError } from '../llm.js';
 import { error, info } from '../ui.js';
 
 interface BootstrapFlags {
   yes?: boolean;
   force?: boolean;
+  ai?: boolean;
 }
 
 function summarize(result: {
@@ -22,7 +24,22 @@ async function runBootstrap(flags: BootstrapFlags): Promise<void> {
   const fs = new NodeFileSystem();
   const cwd = process.cwd();
 
-  const plan = await planBootstrap(fs, { cwd, force: flags.force });
+  let llm;
+  if (flags.ai) {
+    info(
+      'AI assist on: sending the detected facts (metadata only, no source) to refine the description.',
+    );
+    llm = createLlmClient();
+  }
+
+  let plan;
+  try {
+    plan = await planBootstrap(fs, { cwd, force: flags.force, llm });
+  } catch (err) {
+    error(describeLlmError(err));
+    process.exitCode = 1;
+    return;
+  }
   const evidence = plan.evidence.map((e) => `  • ${e}`).join('\n');
 
   if (flags.yes) {
@@ -71,6 +88,10 @@ export function registerBootstrap(program: Command): void {
     .description('Infer a draft .repospec/ from an existing repo (offline)')
     .option('-y, --yes', 'non-interactive; write the draft without prompting')
     .option('-f, --force', 'overwrite existing human-owned files')
+    .option(
+      '--ai',
+      'opt in to AI refinement of the description (sends metadata)',
+    )
     .action(async (flags: BootstrapFlags) => {
       try {
         await runBootstrap(flags);

@@ -1,0 +1,13 @@
+name: acme-billing
+summary: Usage-based billing service for the Acme platform.
+users: Internal finance team plus the public billing API.
+stack:
+  language: TypeScript
+  runtime: Node 20
+  framework: NestJS
+  datastore: PostgreSQL
+deploy:
+  target: AWS ECS
+  pipeline: GitHub Actions
+compliance: [SOC2, PCI-DSS]
+roles: [architect, builder, reviewer, tester, security, release]

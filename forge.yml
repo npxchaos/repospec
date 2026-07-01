@@ -1,0 +1,14 @@
+name: forge
+on: [push, pull_request]
+
+jobs:
+  agents-md-in-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: AGENTS.md matches .forge/
+        run: python3 tools/forge_build.py examples/acme-billing --check

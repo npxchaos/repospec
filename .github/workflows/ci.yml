@@ -40,6 +40,12 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: JSON Schema up to date
+        run: |
+          pnpm schema
+          git diff --exit-status schemas/ \
+            || (echo "::error::schemas/ is stale — run \`pnpm schema\` and commit." && exit 1)
+
       - name: Typecheck
         run: pnpm typecheck
 

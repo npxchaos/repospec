@@ -53,7 +53,9 @@ describe('parseProject', () => {
   it('round-trips through serializeProject', () => {
     const project = parseProject(VALID_PROJECT);
     const text = serializeProject(project);
-    expect(text).toContain('$schema=https://repospec.dev/schema/0.1/');
+    expect(text).toContain(
+      '$schema=https://raw.githubusercontent.com/npxchaos/repospec/main/schemas/0.1/',
+    );
     expect(parseProject(text)).toEqual(project);
   });
 });

@@ -61,7 +61,7 @@ export function parseProject(text: string): Project {
  * @returns YAML text suitable for writing to `.repospec/project.yaml`.
  */
 export function serializeProject(project: Project): string {
-  const schemaUrl = `https://repospec.dev/schema/${project.repospecProtocol}/project.schema.json`;
+  const schemaUrl = `https://raw.githubusercontent.com/npxchaos/repospec/main/schemas/${project.repospecProtocol}/project.schema.json`;
   const header = `# yaml-language-server: $schema=${schemaUrl}\n`;
   return header + stringifyYaml(project);
 }

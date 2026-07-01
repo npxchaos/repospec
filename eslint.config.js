@@ -17,4 +17,11 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Node build/utility scripts run outside the bundled packages.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly' },
+    },
+  },
 );

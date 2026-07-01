@@ -15,7 +15,7 @@ the top level. Implementations SHOULD support an editor `$schema` association so
 authors get inline validation:
 
 ```yaml
-# yaml-language-server: $schema=https://repospec.dev/schema/0.1/project.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/npxchaos/repospec/main/schemas/0.1/project.schema.json
 ```
 
 ## 2. Top-level fields
@@ -108,7 +108,7 @@ NOT execute plugin code. Each entry:
 ## 4. Example
 
 ```yaml
-# yaml-language-server: $schema=https://repospec.dev/schema/0.1/project.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/npxchaos/repospec/main/schemas/0.1/project.schema.json
 repospecProtocol: "0.1"
 
 project:

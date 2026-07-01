@@ -71,7 +71,7 @@ at version *N+1*:
 For each protocol version, the JSON Schema for `project.yaml` is published at:
 
 ```
-spec/schema/<version>/project.schema.json
+schemas/<version>/project.schema.json
 ```
 
 The schema is generated from the reference implementation (ADR-0005) but the

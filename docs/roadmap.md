@@ -8,6 +8,13 @@ issue to small implementation tasks.
 Legend: every issue below is sized to be a single, reviewable PR. Tasks inside
 an issue are checklist items, not separate PRs.
 
+> **Status (2026-07-01): all milestones S–7 are delivered** and shipped in the
+> published `@repospec/*` packages — including the gated plugin runtime (Milestone
+> 6) and AI-assisted bootstrap (Milestone 7). This document is the original,
+> sequenced *plan*; the checklists below are kept as that historical plan and do
+> **not** track current completion. For live status see [`../TODO.md`](../TODO.md),
+> and for the shipped command surface see [`commands.md`](./commands.md).
+
 ---
 
 ## Milestone S — Specification & Vision (precedes all code) — ✅ DONE
@@ -26,7 +33,7 @@ phase.
 - [x] S.8 `spec/versioning.md` — protocol semver, compatibility, migration.
 - [x] S.9 `spec/rfcs/0000-template.md` — RFC process scaffolding.
 
-The JSON Schema (`spec/schema/0.1/`) is intentionally generated later, from the
+The JSON Schema (`schemas/0.1/`) is intentionally generated later, from the
 engine (Milestone 5), with this prose as the authoritative source.
 
 ---
@@ -159,7 +166,7 @@ Goal: templates are extensible and well-documented (still bundled/offline).
 Goal: the (already-authored, Milestone S) specification becomes machine-checked
 and externally consumable.
 
-### Issue 5.1 — Generate JSON Schema from zod → `spec/schema/0.1/` (ADR-0005).
+### Issue 5.1 — Generate JSON Schema from zod → `schemas/0.1/` (ADR-0005).
 ### Issue 5.2 — Conformance test suite: validate fixtures against the spec.
 ### Issue 5.3 — `repospec upgrade` skeleton + version-mismatch errors (ADR-0002).
 ### Issue 5.4 — Reconcile generated schema with `spec/*.md`; drift snapshot test.
@@ -170,14 +177,14 @@ and externally consumable.
 
 ---
 
-## Milestone 6 — Phase 8: Plugins (declarative first)
+## Milestone 6 — Phase 8: Plugins — ✅ DONE
 
-Goal: a plugin _model_ exists; no untrusted code executes until a security ADR.
+Goal: a plugin model exists and executes safely — gated by consent + integrity +
+a worker sandbox (ADR-0008, ADR-0009, RFC-0001).
 
-### Issue 6.1 — Declarative plugin schema in `project.yaml`/`.repospec/plugins`.
-### Issue 6.2 — Security ADR for the plugin runtime (trust/sandbox) — **blocks**
-                any code-executing plugin.
-### Issue 6.3 — Plugin discovery + validation (no execution) + `SECURITY.md`.
+### Issue 6.1 — Declarative plugin schema (`PluginRefSchema` + manifest/lockfile).
+### Issue 6.2 — Security ADR for the plugin runtime (trust/sandbox): ADR-0008/0009.
+### Issue 6.3 — Plugin discovery + validation + approval + gated execution.
 
 ---
 

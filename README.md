@@ -22,11 +22,11 @@ npx @repospec/cli init   # interview → generate a complete .repospec/ + tool e
 
 ## Project status
 
-🛠️ **Working alpha, published on npm.** The specification is authored and the
-reference toolchain runs end-to-end: `repospec init` generates a complete
-`.repospec/` plus assistant entrypoints, and `repospec doctor` / `repospec sync` /
-`repospec generate` maintain them. Milestones S, 0, 1, 2, and 3 are complete (see
-[`TODO.md`](./TODO.md)).
+**Published on npm; the full command surface is implemented.** `init`,
+`bootstrap`, `generate`, `sync`, `doctor`, `upgrade`, `review`, `architect`, and
+`plugins` all work end-to-end; six adapters render tool entrypoints; the plugin
+runtime executes approved, integrity-pinned plugins in a sandbox. Every roadmap
+milestone is delivered (see [`TODO.md`](./TODO.md)); releases ship via Changesets.
 
 ## Quickstart
 
@@ -76,7 +76,7 @@ Repospec
 ├── Repospec CLI             one human entrypoint to the engine
 ├── Repospec Templates       default content the spec is seeded from
 ├── Repospec Adapters        project the spec into each assistant's format
-└── Repospec Plugins         community extensions (declarative-first)
+└── Repospec Plugins         community extensions (opt-in, consent-gated execution)
 ```
 
 The organizing layering is **Specification → Engine → CLI → Repository**: the
@@ -94,7 +94,7 @@ Gemini all ship today — and kept current by `repospec sync`.
 | Package | Role |
 | ------- | ---- |
 | `@repospec/protocol` | the executable specification (types + zod) |
-| `@repospec/engine` | the operations: init / bootstrap / generate / sync / doctor / upgrade / review / architect |
+| `@repospec/engine` | the operations: init / bootstrap / generate / sync / doctor / upgrade / review / architect / plugins |
 | `@repospec/templates` | default content + adapter content |
 | `@repospec/cli` | commander + clack front-end |
 

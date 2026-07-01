@@ -52,9 +52,9 @@ These come straight from the project's charter and override convenience:
 - Small iterations over rewrites. Explicit over hidden.
 - Convention over configuration. The protocol is tool-agnostic.
 
-## Supporting documents (to be added)
+## Supporting documents
 
-- `CONTRIBUTING.md` — how to set up, test, and submit changes.
-- `CODE_OF_CONDUCT.md` — Contributor Covenant.
-- `CODEOWNERS` — review ownership map.
-- `SECURITY.md` — vulnerability reporting (critical before Phase 8 plugins).
+- [`CONTRIBUTING.md`](../CONTRIBUTING.md) — how to set up, test, and submit changes.
+- [`CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) — Contributor Covenant.
+- `.github/CODEOWNERS` — review ownership map.
+- [`SECURITY.md`](../SECURITY.md) — vulnerability reporting.

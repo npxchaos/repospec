@@ -22,21 +22,23 @@ defined here — the specification is primary, the implementation is replaceable
 | [`lifecycle.md`](./lifecycle.md) | Repository states and protocol operations | Normative |
 | [`versioning.md`](./versioning.md) | Protocol semver, compatibility, migration | Normative |
 
-## Generated & future contents
+## Related contents
 
 ```
 spec/
-  *.md                            the documents above (authored first)
-  schema/
-    0.1/
-      project.schema.json         JSON Schema generated from the engine (ADR-0005)
+  *.md                            the documents above
   rfcs/
     0000-template.md              RFC template (protocol change proposals)
-    NNNN-title.md                 individual proposals (see governance)
+    0001-plugin-manifest-and-consent.md
+schemas/                          (repo root) — generated, not authored
+  0.1/
+    project.schema.json           JSON Schema generated from the engine (ADR-0005)
+    agent.schema.json  rule.schema.json
+    plugin-manifest.schema.json  plugin-lock.schema.json
 ```
 
-The JSON Schema is produced during implementation (roadmap Milestone 5) from the
-zod schemas in `@repospec/protocol`; this prose remains authoritative.
+The JSON Schemas are generated from the zod schemas in `@repospec/protocol` and
+hosted on GitHub raw; this prose remains authoritative where they disagree.
 
 ## Protocol version
 

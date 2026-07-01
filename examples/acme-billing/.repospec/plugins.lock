@@ -1,0 +1,6 @@
+approved:
+  - id: acme-compliance-pack
+    version: "1"
+    integrity: sha256-+4BoBPqOGSbabWhxonjPuExUalyK8iijJCP2E1V4NEU=
+    capabilities:
+      - generate-outputs

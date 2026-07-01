@@ -7,18 +7,20 @@ data and a manifest — minimal logic (ADR-0001).
 Templates are **bundled**, so `repospec init` is deterministic and offline
 (ADR-0006).
 
-## Status
+## What it provides
 
-Implemented (Milestone 2). `getSeedDocuments(project)` returns the human-owned
-`.repospec/` seed files for a freshly initialized project:
+`getSeedDocuments(project)` returns the human-owned `.repospec/` seed files for a
+freshly initialized project:
 
-- `constitution.md`, `architecture.md`, `workflow.md` (interpolated from the
-  init answers),
+- `constitution.md`, `architecture.md`, `workflow.md` (rendered from the init
+  answers),
 - starter agents (`reviewer`, `implementer`),
 - starter rules (`tests-required`, `small-changes`, `document-public-api`).
 
-`project.yaml` is serialized by the engine, not here. Variable interpolation and
-partials are tracked for Milestone 4.
+`project.yaml` is serialized by the engine, not here. `interpolate` (a
+`{{ dotted.path }}` substitution engine that throws on a missing variable) and
+`partials` (reusable snippets) are exported for authoring templates — see
+[`docs/templates.md`](../../docs/templates.md).
 
 ## Ownership
 

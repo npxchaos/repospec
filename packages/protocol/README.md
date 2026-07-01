@@ -8,19 +8,21 @@ side effects.
 > The specification is authoritative. Where this package and the prose spec
 > disagree, [`spec/`](../../spec/) wins (see ADR-0005).
 
-## Status
+## What it provides
 
-Implemented (Milestone 1):
-
-- `PROTOCOL_VERSION`, `supports(version)` — version helpers.
-- zod schemas for `project.yaml`, agents, and rules + inferred types.
+- `PROTOCOL_VERSION`, `supports(version)`, `parseProtocolVersion`,
+  `compareProtocolVersions` — version helpers.
+- zod schemas for `project.yaml`, agents, rules, and plugins (manifest +
+  approval lockfile) + inferred types.
 - `parseProject` / `serializeProject`, `parseAgent`, `parseRule`,
+  `parsePluginManifest`, `parsePluginLock`, `serializePluginLock`,
   `parseFrontmatter`.
 - `readRepospec(fs, dir)` — read and validate a whole `.repospec/` tree through the
   injectable `RepospecFileSystem` port.
 - `RepospecValidationError` with human-first, path-prefixed messages.
 
-The generated JSON Schema (from these zod schemas) lands in Milestone 5.
+A JSON Schema is generated from these zod schemas to `schemas/0.1/` (hosted on
+GitHub raw); see [ADR-0005](../../docs/adr/0005-validation-zod-and-json-schema.md).
 
 ## Usage
 

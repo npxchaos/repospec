@@ -28,7 +28,9 @@ directory, stopping at the first `.repospec/` found.
   rules/                OPTIONAL   focused, enforceable rules; see agent.md
     <id>.md
   templates/            OPTIONAL   project-local scaffolding templates
-  plugins/              OPTIONAL   declarative plugin references (see versioning)
+  plugins/              OPTIONAL   plugin packages, one dir per id (RFC-0001)
+    <id>/repospec-plugin.yaml
+  plugins.lock          OPTIONAL   operator approvals (id+version+integrity)
 ```
 
 - `project.yaml` is the **root artifact**. Every other artifact is discovered
@@ -54,7 +56,8 @@ Implementations MUST ignore unknown files and directories under `.repospec/`
 | `agents/<id>.md` | frontmatter + prose | no | a role an assistant can adopt |
 | `rules/<id>.md` | frontmatter + prose | no | a single enforceable rule |
 | `templates/**` | files | no | project-local scaffolding |
-| `plugins/**` | declarative | no | extensions; declarative-only until the plugin security ADR |
+| `plugins/<id>/repospec-plugin.yaml` | structured (YAML) | no | plugin manifest (RFC-0001) |
+| `plugins.lock` | structured (YAML) | no | operator approvals; gates plugin execution (ADR-0008/0009) |
 
 ## 4. Ownership (normative)
 

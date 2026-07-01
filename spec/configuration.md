@@ -6,7 +6,7 @@
 
 > Defines `.repospec/project.yaml`: the structured root artifact. This prose is
 > authoritative; a machine-readable **JSON Schema** is generated from the
-> reference implementation and published to `spec/schema/<version>/` (ADR-0005).
+> reference implementation and published to `schemas/<version>/` (ADR-0005).
 
 ## 1. Format
 
@@ -95,15 +95,20 @@ The set of enabled adapters determines which **generated outputs** exist
 
 ### 3.7 `plugins`
 
-An array of declarative plugin references. Until the plugin security ADR
-(roadmap Milestone 6), plugins are **declarative only**: an implementation MUST
-NOT execute plugin code. Each entry:
+An array of plugin references. Each entry:
 
 | Field | Type | Required | Notes |
 | ----- | ---- | -------- | ----- |
 | `id` | string | yes | Plugin identifier. |
 | `version` | string | no | Version constraint. |
 | `options` | object | no | Plugin-specific options. |
+
+An implementation MUST NOT execute a plugin unless it is **approved** in
+`.repospec/plugins.lock` with an integrity hash matching the resolved code and a
+capability the plugin's manifest declares (RFC-0001; trust model in ADR-0008,
+sandbox in ADR-0009). Execution is opt-in; a declared-but-unapproved plugin is
+inert. A plugin ships a `repospec-plugin.yaml` manifest at
+`.repospec/plugins/<id>/`.
 
 ## 4. Example
 

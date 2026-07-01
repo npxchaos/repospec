@@ -17,7 +17,7 @@ Repospec
 ├── Repospec CLI             one human entrypoint to the engine
 ├── Repospec Templates       default content the spec is seeded from
 ├── Repospec Adapters        project the spec into each assistant's format
-└── Repospec Plugins         community extensions (declarative-first)
+└── Repospec Plugins         community extensions (opt-in, consent-gated execution)
 ```
 
 The organizing layering is **Specification → Engine → CLI → Repository**
@@ -31,7 +31,7 @@ stand.*
 │  THE SPECIFICATION  (the standard — language-neutral, versioned)│
 │                                                                │
 │   spec/*.md            normative definition (authored first)    │
-│   spec/schema/         JSON Schema generated from the engine     │
+│   schemas/         JSON Schema generated from the engine     │
 │   .repospec/              the materialized protocol in a repo      │
 │                                                                │
 │   Source of truth. Any tool, in any language, can implement.   │
@@ -66,7 +66,8 @@ tool.
   rules/                # focused, enforceable rules (Markdown + frontmatter)
     <name>.md
   templates/            # project-local scaffolding templates (optional)
-  plugins/              # declarative plugin references (Phase 8)
+  plugins/<id>/         # plugin packages + manifest (RFC-0001)
+  plugins.lock          # operator approvals gating plugin execution
 ```
 
 - `project.yaml` is the **root**. It declares the protocol version, project
@@ -108,7 +109,7 @@ The protocol made executable. No side effects beyond pure (de)serialization.
 
 - TypeScript types for every `.repospec/` artifact.
 - zod schemas (the internal source of truth for validation).
-- JSON Schema generation (published to `spec/`).
+- JSON Schema generation (published to `schemas/`, hosted on GitHub raw).
 - `PROTOCOL_VERSION` constant + version compatibility helpers.
 - parse/serialize a `.repospec/` directory tree given an injected filesystem
   (so it is testable without touching disk).
@@ -121,11 +122,14 @@ config), never prompts. This is what makes it testable and embeddable (a VS
 Code extension or CI action could use it directly).
 
 - `init` pipeline: answers → validated config → file plan → write.
+- `bootstrap`: infer a draft `.repospec/` from an existing repo (offline; opt-in AI).
 - `generate`: render artifacts/adapters from `.repospec/`.
 - `sync`: diff desired vs. actual adapter outputs; apply respecting ownership.
-- `doctor`: validate a repo's `.repospec/` and report problems.
+- `doctor`: validate a repo's `.repospec/`, report problems, detect code drift.
 - `upgrade`: migrate between protocol versions.
-- the **adapter registry** (renderers from `.repospec/` → tool files).
+- `review` / `architect`: AI-assisted, via an injectable `LlmClient` port.
+- the **adapter registry** (six built-in renderers) and the **plugin runtime**
+  (approved, integrity-pinned, worker-sandboxed).
 
 Depends on: protocol, templates.
 
@@ -190,7 +194,7 @@ Full rules: ADR-0004.
 ## 6. Validation strategy
 
 - zod schemas in `protocol` are the single internal source of truth.
-- A build step emits a **JSON Schema** to `spec/schema/` for external use.
+- A build step emits a **JSON Schema** to `schemas/` for external use.
 - `doctor` and `init` validate with zod; error messages are human-first.
 - Details: ADR-0005.
 
@@ -232,5 +236,6 @@ Full rules: ADR-0004.
 
 - Not an agent runtime; Repospec does not execute AI calls except opt-in Phase 9.
 - Not a replacement for any assistant; it _feeds_ them.
-- No plugin code execution before Phase 8 + its security ADR.
+- No plugin code execution except opt-in, consent- and integrity-gated
+  (ADR-0008/0009).
 - No network dependency for the core operations (Phases 1–8).

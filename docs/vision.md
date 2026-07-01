@@ -94,7 +94,7 @@ Repospec
 ├── Repospec CLI             the human entrypoint to the engine
 ├── Repospec Templates       default content the spec is seeded from
 ├── Repospec Adapters        project the spec into each assistant's format
-└── Repospec Plugins         community extensions (declarative-first)
+└── Repospec Plugins         community extensions (opt-in, consent-gated execution)
 ```
 
 The CLI is *one* implementation of the specification. If the CLI vanished

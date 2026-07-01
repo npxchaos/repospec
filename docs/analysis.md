@@ -86,8 +86,8 @@ zod is chosen, but a _standard_ needs a language-neutral contract. Editors, CI
 in non-JS repos, and third-party implementations cannot consume zod.
 
 **Improvement:** zod is the internal source of truth; we **generate and publish
-a JSON Schema** for `project.yaml` from it. The JSON Schema ships in `spec/`
-and is referenceable by `$schema`. See ADR-0005.
+a JSON Schema** for `project.yaml` from it. The JSON Schema ships in `schemas/`
+(hosted on GitHub raw) and is referenceable by `$schema`. See ADR-0005.
 
 ### W6 — Markdown vs. structured data boundary is fuzzy
 `project.yaml` is structured; `constitution.md`, `architecture.md`,
@@ -138,9 +138,11 @@ Changing the standard is not the same as fixing a bug.
 Plugins imply executing third-party code during `init`/`generate`. That is an
 arbitrary-code-execution surface in developers' repos.
 
-**Improvement:** defer the plugin _runtime_ design to its own ADR with an
-explicit trust/sandbox model. Until then, plugins are declarative only. No
-plugin code runs before Phase 8 lands with a security review.
+**Improvement (shipped):** the plugin runtime has its own trust/sandbox design —
+ADR-0008 (consent + capabilities + integrity) and ADR-0009 (worker sandbox),
+with RFC-0001 defining the manifest and approval lockfile. Execution is opt-in
+and runs only for plugins approved in `.repospec/plugins.lock` with a matching
+integrity hash; unapproved plugins stay inert.
 
 ### W12 — The `repospec`/`@repospec` naming risk
 "Repospec" is heavily used (Laravel Repospec, Minecraft Repospec, SourceHut). The npm
@@ -164,7 +166,8 @@ Confirm npm scope availability before first publish.
 8. Make `init` **re-run safe**.
 9. Use **Changesets**; avoid premature build orchestration.
 10. Establish **governance + an RFC process** for protocol changes.
-11. Treat **plugins** as a security boundary; declarative-only until reviewed.
+11. Treat **plugins** as a security boundary; execution is consent- and
+    integrity-gated (ADR-0008/0009, RFC-0001).
 12. Resolve **naming** via the `@repospec` scope.
 
 These improvements are folded into the architecture and the roadmap that

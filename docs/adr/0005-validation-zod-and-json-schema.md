@@ -10,6 +10,10 @@ zod is the chosen validator, but a standard must be consumable by tools outside
 the TypeScript ecosystem (editors via `$schema`, CI in other languages,
 third-party implementations). zod is not language-neutral. (Weakness W5.)
 
+> **Update (2026-07-01):** the schema shipped at repo-root
+> `schemas/<protocol-version>/` (hosted on `raw.githubusercontent.com/.../schemas/…`)
+> rather than `spec/schema/…`. The decision below stands; only the path changed.
+
 ## Decision
 
 - zod schemas in `@repospec/protocol` are the **internal source of truth**

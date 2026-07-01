@@ -38,7 +38,7 @@ export default defineConfig({
 
   themeConfig: {
     nav: [
-      { text: 'Guide', link: '/docs/vision' },
+      { text: 'Guide', link: '/docs/guide/getting-started' },
       { text: 'Commands', link: '/docs/commands' },
       { text: 'Specification', link: '/spec/README' },
       { text: 'ADRs', link: '/docs/adr/README' },
@@ -59,7 +59,23 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: 'Introduction',
+        text: 'Guide',
+        items: [
+          { text: 'Getting started', link: '/docs/guide/getting-started' },
+          { text: 'Start from scratch', link: '/docs/guide/from-scratch' },
+          {
+            text: 'Adopt in an existing project',
+            link: '/docs/guide/existing-project',
+          },
+          { text: 'Roles & rules', link: '/docs/guide/agents-and-rules' },
+          { text: 'Parallel subagents', link: '/docs/guide/parallel-agents' },
+          { text: 'Guard drift in CI', link: '/docs/guide/ci' },
+          { text: 'Adapters', link: '/docs/guide/adapters' },
+          { text: 'Troubleshooting', link: '/docs/guide/troubleshooting' },
+        ],
+      },
+      {
+        text: 'Background',
         items: [
           { text: 'Why Repospec', link: '/docs/vision' },
           { text: 'Manifesto', link: '/docs/manifesto' },

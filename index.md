@@ -9,11 +9,11 @@ hero:
     assistants understand, build, and evolve a project — without prompts.
   actions:
     - theme: brand
+      text: Get started
+      link: /docs/guide/getting-started
+    - theme: alt
       text: Why Repospec
       link: /docs/vision
-    - theme: alt
-      text: Command reference
-      link: /docs/commands
     - theme: alt
       text: The Specification
       link: /spec/README
@@ -57,6 +57,8 @@ repospec sync --check   # CI: fail if entrypoints drift from .repospec/
 Repospec-owned tool entrypoints. Edit `.repospec/`, then run `repospec sync` to
 update every assistant's file at once.
 
-Start with **[Why Repospec](/docs/vision)**, keep the
+New here? Follow the **[getting-started guide](/docs/guide/getting-started)** —
+[from scratch](/docs/guide/from-scratch) or
+[adopt in an existing project](/docs/guide/existing-project). Keep the
 **[command reference](/docs/commands)** handy, and read the
 **[Specification](/spec/README)** to implement it in any language.

@@ -20,6 +20,8 @@ import {
   testsRequiredRule,
 } from './content/rules.js';
 
+export { interpolate, partials } from './render.js';
+
 /** A seed file to be written under `.repospec/`. Always human-owned. */
 export interface SeedFile {
   /** Path relative to the `.repospec/` directory. */

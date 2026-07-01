@@ -40,7 +40,7 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 - [x] 3.5 `repospec doctor`
 
 ## ▸ Milestone 4 — Phase 6: Templates system
-- [ ] 4.1 Variable interpolation + partials
+- [x] 4.1 Variable interpolation + partials (`interpolate` / `partials`, used by seed content)
 - [x] 4.2 Cursor + Copilot adapters _(shipped early in Milestone 3)_
 - [ ] 4.3 Template authoring docs
 
@@ -81,6 +81,7 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Remaining:** template interpolation (4.1), AI-assisted bootstrap (7.2), and the
-plugin _runtime_ that [ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates
-(plugins are declarative-only today).
+**Remaining:** AI-assisted bootstrap (7.2), a conformance fixture corpus beyond the
+examples (5.2 extension), and the plugin _runtime_ that
+[ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates (plugins are
+declarative-only today).

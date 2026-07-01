@@ -1,5 +1,33 @@
 # @repospec/protocol
 
+## 0.7.0
+
+### Minor Changes
+
+- 7e1a7fd: Plugin hardening: capability-gated network + npm resolution.
+
+  - **Network capability enforced (partial):** a plugin not approved for the
+    `network` capability runs with `fetch` and `WebSocket` replaced by throwing
+    stubs. Low-level `node:net`/`node:http` can't be blocked in-process (Node has
+    no network permission, and loader-hook gating needs `--allow-worker`, which the
+    sandbox denies), so that residual remains — see ADR-0010; full isolation needs
+    an OS sandbox.
+  - **npm resolution:** a declared plugin now resolves from a local
+    `.repospec/plugins/<id>/` **or** an installed npm package `<id>` that ships a
+    `repospec-plugin.yaml`. Resolution/reads happen engine-side; the sandboxed
+    child still receives only the source (zero-fs). Plugin entries must remain
+    single self-contained modules.
+
+- 7c6e8f9: Harden the plugin sandbox (ADR-0010, supersedes ADR-0009's worker). Approved
+  plugins now run in a child `node` process under Node's Permission Model with
+  **no filesystem access** (no read or write), no child-process/worker/addon
+  permissions, and `env: {}`. The engine reads the (integrity-checked) plugin
+  source and the child imports it as a `data:` URL, so it needs zero fs grants —
+  an OS-enforced boundary, not cooperative isolation. Filesystem writes from a
+  plugin are now blocked by the runtime (verified by test). Constraint: a plugin
+  entry must be a single self-contained module (bundle any dependencies), since a
+  `data:` URL cannot resolve relative or `node_modules` imports.
+
 ## 0.6.0
 
 ### Minor Changes

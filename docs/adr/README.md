@@ -18,6 +18,7 @@ Use [`template.md`](./template.md) for new records. Number sequentially.
 | [0008](./0008-plugin-runtime-security.md) | Plugin runtime security (trust and sandbox model) | Accepted |
 | [0009](./0009-plugin-sandbox-mechanism.md) | Plugin sandbox mechanism (worker) | Superseded by 0010 |
 | [0010](./0010-plugin-sandbox-permission-model.md) | Plugin sandbox: Node Permission Model subprocess | Accepted |
+| [0011](./0011-plugin-bundling.md) | Bundle plugins at resolve time (multi-file; integrity over the bundle) | Accepted |
 
 ## When to write an ADR
 

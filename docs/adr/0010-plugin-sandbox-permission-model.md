@@ -46,9 +46,10 @@ node --permission --input-type=module -e <runner>
   plugin never writes files itself.
 - **Bounded.** A timeout kills a plugin that hangs.
 
-Because the plugin is imported as a `data:` URL, its entry must be a **single,
-self-contained module** — relative imports of sibling files or `node_modules`
-cannot resolve. External dependencies must be bundled into the entry.
+Because the plugin is imported as a `data:` URL, the code that runs must be a
+single self-contained module. **[ADR-0011](./0011-plugin-bundling.md) lifts the
+authoring constraint** by bundling the plugin engine-side (multi-file + deps)
+before it reaches this sandbox, and hashing the bundle.
 
 Integrity + consent (ADR-0008) remain the primary gate: a plugin runs only if
 `.repospec/plugins.lock` approves it at a matching integrity hash. The Permission

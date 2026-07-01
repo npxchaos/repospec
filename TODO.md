@@ -89,6 +89,8 @@ manifests, an integrity-pinned approval lockfile, consent-gated opt-in execution
 Permission Model with no filesystem access
 ([ADR-0010](./docs/adr/0010-plugin-sandbox-permission-model.md), supersedes
 ADR-0009's worker), and `fetch`/`WebSocket` are denied without the `network`
-capability. Remaining hardening: airtight network isolation (an OS sandbox
-covering sockets — `node:net` isn't blockable in-process) and a bundling step so
-multi-file / dependency-bearing plugins can run.
+capability. Plugins are **bundled** with esbuild engine-side
+([ADR-0011](./docs/adr/0011-plugin-bundling.md)) so they can span multiple files
+and dependencies, with integrity pinned over the whole bundle. Remaining
+hardening: airtight network isolation (an OS sandbox covering sockets — `node:net`
+isn't blockable in-process).

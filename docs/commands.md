@@ -74,11 +74,13 @@ A plugin gets `fetch`/`WebSocket` only if approved for the `network` capability
 | `repospec plugins approve [--yes]` | Write `.repospec/plugins.lock` approving each declared plugin's **exact current code** (pinned by integrity hash) and its declared capabilities. |
 | `repospec generate --plugins` / `repospec sync --plugins` | Include outputs from approved plugins. A plugin runs only if the lockfile approves it and the on-disk integrity still matches; anything else is skipped with a warning, never run. |
 
-A plugin is a module that default-exports `async ({ repo, capabilities }) => ({ outputs: [{ path, body }] })`.
-Its outputs go through the same ownership/managed pipeline as adapter outputs, so
-they carry a managed header and never clobber hand-edits without `--force`.
-Executable plugins require the `generate-outputs` capability, declared in the
-manifest and approved in the lockfile.
+A plugin default-exports `async ({ repo, capabilities }) => ({ outputs: [{ path, body }] })`.
+It may span multiple files and use dependencies — the engine **bundles** it with
+esbuild before running it, and pins the integrity hash over the whole bundle
+([ADR-0011](./adr/0011-plugin-bundling.md)). Its outputs go through the same
+ownership/managed pipeline as adapter outputs (managed header; never clobber
+hand-edits without `--force`). Executable plugins require the `generate-outputs`
+capability, declared in the manifest and approved in the lockfile.
 
 ## Exit codes
 

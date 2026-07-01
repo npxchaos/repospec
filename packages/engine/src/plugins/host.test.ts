@@ -73,11 +73,26 @@ describe('plugin runtime', () => {
 
   it('refuses to run after the approved code changes (integrity mismatch)', async () => {
     await approve();
-    // Tamper with the entry after approval.
+    // Tamper with the entry after approval — a real code change.
     await writeFile(
       join(root, '.repospec', 'plugins', 'gen-extra', 'index.mjs'),
-      `${PLUGIN_ENTRY}\n// changed\n`,
+      PLUGIN_ENTRY.replace('project: ', 'TAMPERED: '),
     );
+    const { outputs, warnings } = await runPlugins(fs, root);
+    expect(outputs).toEqual([]);
+    expect(warnings.join('\n')).toContain('integrity mismatch');
+  });
+
+  it('integrity covers imported files, not just the entry (bundling)', async () => {
+    const dir = join(root, '.repospec', 'plugins', 'gen-extra');
+    await writeFile(
+      join(dir, 'index.mjs'),
+      `import { body } from './helper.mjs';\nexport default async () => ({ outputs: [{ path: 'M.md', body }] });\n`,
+    );
+    await writeFile(join(dir, 'helper.mjs'), `export const body = 'v1';\n`);
+    await approve();
+    // Tamper an IMPORTED file (the entry is byte-identical).
+    await writeFile(join(dir, 'helper.mjs'), `export const body = 'v2';\n`);
     const { outputs, warnings } = await runPlugins(fs, root);
     expect(outputs).toEqual([]);
     expect(warnings.join('\n')).toContain('integrity mismatch');

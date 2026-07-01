@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
+import { build } from 'esbuild';
 import {
   REPOSPEC_DIR,
   readRepospec,
@@ -15,6 +16,29 @@ import { integrityOf } from './integrity.js';
 
 /** The capability enum type, reused for resolved plugins. */
 type Capability = PluginManifest['capabilities'][number];
+
+/**
+ * Bundle a plugin entry (and its local imports + dependencies) into a single
+ * self-contained ESM string, engine-side. This is what lets a plugin span
+ * multiple files while the sandbox still runs one `data:` module — and it means
+ * the integrity hash covers *all* included code, not just the entry file
+ * (ADR-0011). `node:` builtins stay external.
+ *
+ * @param entryPath - Absolute path to the plugin entry.
+ * @returns The bundled module source.
+ */
+async function bundlePlugin(entryPath: string): Promise<string> {
+  const result = await build({
+    entryPoints: [entryPath],
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+    write: false,
+    logLevel: 'silent',
+    legalComments: 'none',
+  });
+  return result.outputFiles[0]?.text ?? '';
+}
 
 /**
  * Locate a declared plugin's directory: a local `.repospec/plugins/<id>/` first,
@@ -104,7 +128,15 @@ export async function resolvePlugins(
       warnings.push(`Plugin "${ref.id}": entry "${manifest.entry}" missing.`);
       continue;
     }
-    const integrity = integrityOf(await fs.readFile(entryPath));
+    let integrity: string;
+    try {
+      integrity = integrityOf(await bundlePlugin(entryPath));
+    } catch (e) {
+      warnings.push(
+        `Plugin "${ref.id}": bundling failed: ${(e as Error).message}`,
+      );
+      continue;
+    }
     const approval = lock.approved.find((a) => a.id === ref.id);
     plugins.push({
       id: manifest.id,
@@ -280,8 +312,16 @@ export async function runPlugins(
       );
       continue;
     }
-    const source = await fs.readFile(entryPath);
-    const integrity = integrityOf(source);
+    let bundle: string;
+    try {
+      bundle = await bundlePlugin(entryPath);
+    } catch (e) {
+      warnings.push(
+        `Plugin "${ref.id}": bundling failed: ${(e as Error).message}`,
+      );
+      continue;
+    }
+    const integrity = integrityOf(bundle);
 
     const approval = lock.approved.find((a) => a.id === ref.id);
     if (!approval) {
@@ -306,7 +346,7 @@ export async function runPlugins(
       continue;
     }
 
-    const result = await runInSubprocess(source, repo, approval.capabilities);
+    const result = await runInSubprocess(bundle, repo, approval.capabilities);
     if (result.error) {
       warnings.push(`Plugin "${ref.id}" failed: ${result.error}`);
       continue;

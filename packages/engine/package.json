@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@repospec/protocol": "workspace:*",
-    "@repospec/templates": "workspace:*"
+    "@repospec/templates": "workspace:*",
+    "esbuild": "^0.28.1"
   },
   "publishConfig": {
     "access": "public"

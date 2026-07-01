@@ -31,6 +31,8 @@ rules:
 adapters:
   - id: claude
   - id: agents
+  - id: cursor
+  - id: claude-agents
 plugins:
   - id: acme-compliance-pack
     version: '1'

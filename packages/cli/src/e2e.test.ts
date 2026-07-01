@@ -3,6 +3,7 @@ import {
   existsSync,
   mkdtempSync,
   readFileSync,
+  readdirSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -127,6 +128,21 @@ describe('cli e2e (built binary)', () => {
       expect(arch).toContain('The service owns billing and invoicing.');
     } finally {
       rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('committed examples stay in sync (conformance)', () => {
+    const examplesDir = join(repoRoot, 'examples');
+    const names = readdirSync(examplesDir).filter((n) =>
+      existsSync(join(examplesDir, n, '.repospec/project.yaml')),
+    );
+    expect(names.length).toBeGreaterThan(0);
+    for (const name of names) {
+      const r = cli(join(examplesDir, name), ['sync', '--check']);
+      expect(
+        r.status,
+        `example "${name}" drifted from .repospec/:\n${r.stdout}${r.stderr}`,
+      ).toBe(0);
     }
   });
 });

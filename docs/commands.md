@@ -62,8 +62,9 @@ provider-agnostic and unit-tested without a network.
 manifest ([RFC-0001](../spec/rfcs/0001-plugin-manifest-and-consent.md)) and runs
 only under the trust model in
 [ADR-0008](./adr/0008-plugin-runtime-security.md) / [ADR-0009](./adr/0009-plugin-sandbox-mechanism.md):
-**integrity + consent are the gate**, execution is a worker with no ambient
-environment, and it is opt-in.
+**integrity + consent are the gate**, execution is a subprocess under Node's
+Permission Model with no filesystem access and no ambient environment
+([ADR-0010](./adr/0010-plugin-sandbox-permission-model.md)), and it is opt-in.
 
 | Command | What it does |
 | --- | --- |

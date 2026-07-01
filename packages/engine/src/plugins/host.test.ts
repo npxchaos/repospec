@@ -64,7 +64,7 @@ describe('plugin runtime', () => {
     expect(warnings.join('\n')).toContain('not approved');
   });
 
-  it('runs an approved plugin in a worker and collects its output', async () => {
+  it('runs an approved plugin in the sandbox and collects its output', async () => {
     await approve();
     const { outputs, warnings } = await runPlugins(fs, root);
     expect(warnings).toEqual([]);
@@ -81,5 +81,25 @@ describe('plugin runtime', () => {
     const { outputs, warnings } = await runPlugins(fs, root);
     expect(outputs).toEqual([]);
     expect(warnings.join('\n')).toContain('integrity mismatch');
+  });
+
+  it('sandboxes an approved plugin: filesystem writes are denied (ADR-0010)', async () => {
+    const target = join(root, 'ESCAPED.txt');
+    await writeFile(
+      join(root, '.repospec', 'plugins', 'gen-extra', 'index.mjs'),
+      `export default async () => {
+        const fs = await import('node:fs');
+        fs.writeFileSync(${JSON.stringify(target)}, 'escaped');
+        return { outputs: [] };
+      };\n`,
+    );
+    await approve(); // approve THIS (tampered) code so it is allowed to run
+
+    const { outputs, warnings } = await runPlugins(fs, root);
+
+    expect(outputs).toEqual([]);
+    expect(warnings.join('\n')).toContain('failed'); // the write threw in the sandbox
+    // The write was blocked by the OS-enforced permission model.
+    await expect(readFile(target, 'utf8')).rejects.toThrow();
   });
 });

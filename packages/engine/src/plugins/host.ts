@@ -1,5 +1,5 @@
+import { spawn } from 'node:child_process';
 import { join } from 'node:path';
-import { Worker } from 'node:worker_threads';
 import {
   REPOSPEC_DIR,
   readRepospec,
@@ -10,10 +10,10 @@ import {
   type PluginLockEntry,
   type PluginManifest,
 } from '@repospec/protocol';
+import { integrityOf } from './integrity.js';
 
 /** The capability enum type, reused for resolved plugins. */
 type Capability = PluginManifest['capabilities'][number];
-import { integrityOf } from './integrity.js';
 
 /** A file a plugin wants generated (same shape as an adapter output). */
 export interface PluginOutput {
@@ -115,30 +115,34 @@ export async function buildApprovalLock(
   return { lock: { approved }, warnings };
 }
 
-// CommonJS worker body (eval workers run as CJS): no ambient env is passed
-// (`env: {}` on the Worker), and the plugin receives only a read-only repo
-// snapshot and its approved capability list over workerData. See ADR-0009.
-const WORKER_CODE = `
-const { workerData, parentPort } = require('node:worker_threads');
-const { pathToFileURL } = require('node:url');
-(async () => {
+// ESM runner, evaluated in a child `node` process under the Permission Model
+// (ADR-0010). It reads {source, repo, capabilities} as JSON on stdin, imports the
+// plugin as a data: URL (so the child needs NO filesystem access at all), and
+// writes {outputs} | {error} as JSON on stdout. The child is spawned with env:{}
+// and `--permission` with no --allow-* grants: no fs read/write, no child
+// process, no worker, no addons. A plugin cannot touch the disk or spawn
+// anything — the engine reads the source and owns all writes.
+const RUNNER = `
+let data = '';
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', (c) => { data += c; });
+process.stdin.on('end', async () => {
   try {
-    const mod = await import(pathToFileURL(workerData.entry).href);
+    const { source, repo, capabilities } = JSON.parse(data);
+    const url = 'data:text/javascript,' + encodeURIComponent(source);
+    const mod = await import(url);
     const fn = mod && mod.default;
     if (typeof fn !== 'function') {
-      parentPort.postMessage({ error: 'plugin has no default export function' });
+      process.stdout.write(JSON.stringify({ error: 'plugin has no default export function' }));
       return;
     }
-    const result = await fn({
-      repo: workerData.repo,
-      capabilities: workerData.capabilities,
-    });
+    const result = await fn({ repo, capabilities });
     const outputs = Array.isArray(result && result.outputs) ? result.outputs : [];
-    parentPort.postMessage({ outputs });
+    process.stdout.write(JSON.stringify({ outputs }));
   } catch (e) {
-    parentPort.postMessage({ error: String((e && e.message) || e) });
+    process.stdout.write(JSON.stringify({ error: String((e && e.message) || e) }));
   }
-})();
+});
 `;
 
 interface WorkerResult {
@@ -146,31 +150,56 @@ interface WorkerResult {
   error?: string;
 }
 
-function runInWorker(
-  entry: string,
+function runInSubprocess(
+  source: string,
   repo: unknown,
   capabilities: string[],
 ): Promise<WorkerResult> {
   return new Promise((resolve) => {
-    const worker = new Worker(WORKER_CODE, {
-      eval: true,
-      env: {}, // no ambient environment for the plugin
-      workerData: { entry, repo, capabilities },
-      resourceLimits: { maxOldGenerationSizeMb: 128 },
-    });
+    const child = spawn(
+      process.execPath,
+      [
+        '--permission', // deny-by-default: no fs (read/write), child_process, worker, addons
+        '--input-type=module',
+        '-e',
+        RUNNER,
+      ],
+      { env: {}, stdio: ['pipe', 'pipe', 'pipe'] },
+    );
+
+    let out = '';
+    let err = '';
     const timer = setTimeout(() => {
-      void worker.terminate();
+      child.kill('SIGKILL');
       resolve({ error: 'plugin timed out' });
     }, 10_000);
-    worker.once('message', (message: WorkerResult) => {
-      clearTimeout(timer);
-      void worker.terminate();
-      resolve(message);
+
+    child.stdout.on('data', (d) => {
+      out += d;
     });
-    worker.once('error', (err) => {
-      clearTimeout(timer);
-      resolve({ error: err.message });
+    child.stderr.on('data', (d) => {
+      err += d;
     });
+    child.on('error', (e) => {
+      clearTimeout(timer);
+      resolve({ error: e.message });
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      const trimmed = out.trim();
+      if (trimmed) {
+        try {
+          resolve(JSON.parse(trimmed) as WorkerResult);
+          return;
+        } catch {
+          // fall through to error
+        }
+      }
+      resolve({ error: err.trim() || `plugin exited with code ${code}` });
+    });
+
+    child.stdin.write(JSON.stringify({ source, repo, capabilities }));
+    child.stdin.end();
   });
 }
 
@@ -219,7 +248,8 @@ export async function runPlugins(
       );
       continue;
     }
-    const integrity = integrityOf(await fs.readFile(entryPath));
+    const source = await fs.readFile(entryPath);
+    const integrity = integrityOf(source);
 
     const approval = lock.approved.find((a) => a.id === ref.id);
     if (!approval) {
@@ -244,7 +274,7 @@ export async function runPlugins(
       continue;
     }
 
-    const result = await runInWorker(entryPath, repo, approval.capabilities);
+    const result = await runInSubprocess(source, repo, approval.capabilities);
     if (result.error) {
       warnings.push(`Plugin "${ref.id}" failed: ${result.error}`);
       continue;

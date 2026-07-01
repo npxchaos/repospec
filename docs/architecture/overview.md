@@ -129,7 +129,7 @@ Code extension or CI action could use it directly).
 - `upgrade`: migrate between protocol versions.
 - `review` / `architect`: AI-assisted, via an injectable `LlmClient` port.
 - the **adapter registry** (six built-in renderers) and the **plugin runtime**
-  (approved, integrity-pinned, worker-sandboxed).
+  (approved, integrity-pinned, run in a permission-restricted subprocess).
 
 Depends on: protocol, templates.
 

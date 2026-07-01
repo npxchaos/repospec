@@ -1,6 +1,6 @@
 # ADR-0009: Plugin sandbox mechanism
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0010](./0010-plugin-sandbox-permission-model.md)
 - **Date:** 2026-07-01
 - **Deciders:** Founding engineer
 - **Implements:** [ADR-0008](./0008-plugin-runtime-security.md) (trust model),

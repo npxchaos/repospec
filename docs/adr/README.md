@@ -16,7 +16,8 @@ Use [`template.md`](./template.md) for new records. Number sequentially.
 | [0006](./0006-template-distribution.md) | Bundled, offline-first template distribution | Accepted |
 | [0007](./0007-specification-first-architecture.md) | Specification-first architecture (Specification → Engine → CLI) | Accepted |
 | [0008](./0008-plugin-runtime-security.md) | Plugin runtime security (trust and sandbox model) | Accepted |
-| [0009](./0009-plugin-sandbox-mechanism.md) | Plugin sandbox mechanism (worker + integrity/consent) | Accepted |
+| [0009](./0009-plugin-sandbox-mechanism.md) | Plugin sandbox mechanism (worker) | Superseded by 0010 |
+| [0010](./0010-plugin-sandbox-permission-model.md) | Plugin sandbox: Node Permission Model subprocess | Accepted |
 
 ## When to write an ADR
 

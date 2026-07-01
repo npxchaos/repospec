@@ -31,6 +31,10 @@ The first nine render a single **assistant guide** from your project, roles, and
 rules. `claude-agents` is different: it emits **one file per role** as a native
 Claude Code subagent — see [Parallel subagents](./parallel-agents).
 
+Rule-file formats that require activation frontmatter get it automatically:
+`cursor` emits `alwaysApply: true` and `windsurf` emits `trigger: always_on`, so
+the project context loads on every request rather than only when @-mentioned.
+
 ## Selecting a subset
 
 ```bash

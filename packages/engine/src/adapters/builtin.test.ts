@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildProject } from '../project.js';
 import {
   builtinAdapters,
+  cursorAdapter,
   windsurfAdapter,
   geminiAdapter,
   zedAdapter,
@@ -56,10 +57,23 @@ describe('builtin adapters', () => {
     );
   });
 
-  it('windsurf renders .windsurf/rules/repospec.md', () => {
+  it('windsurf renders an always-on rule with required frontmatter', () => {
     const out = windsurfAdapter.render(repo);
     expect(out).toHaveLength(1);
     expect(out[0]?.path).toBe('.windsurf/rules/repospec.md');
+    // Frontmatter must be first and set the activation trigger.
+    expect(out[0]?.body.startsWith('---\ntrigger: always_on\n---\n')).toBe(
+      true,
+    );
+    expect(out[0]?.body).toContain('# demo — AI Assistant Guide');
+  });
+
+  it('cursor renders an .mdc with alwaysApply frontmatter', () => {
+    const out = cursorAdapter.render(repo);
+    expect(out[0]?.path).toBe('.cursor/rules/repospec.mdc');
+    expect(out[0]?.body.startsWith('---\n')).toBe(true);
+    expect(out[0]?.body).toContain('alwaysApply: true');
+    expect(out[0]?.body).toContain('description:');
     expect(out[0]?.body).toContain('# demo — AI Assistant Guide');
   });
 

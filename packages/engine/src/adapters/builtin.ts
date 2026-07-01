@@ -1,6 +1,12 @@
+import type { RepospecRepository } from '@repospec/protocol';
 import type { Adapter } from './types.js';
 import { renderAssistantGuide } from './markdown.js';
 import { claudeAgentsAdapter } from './claude-agents.js';
+
+/** Prepend a YAML frontmatter block (kept first by the managed-header wrapper). */
+function withFrontmatter(lines: string[], body: string): string {
+  return `---\n${lines.join('\n')}\n---\n\n${body}`;
+}
 
 /** Adapter for Claude / Claude Code, emitting `CLAUDE.md`. */
 export const claudeAdapter: Adapter = {
@@ -28,21 +34,41 @@ export const copilotAdapter: Adapter = {
   ],
 };
 
-/** Adapter for Cursor, emitting `.cursor/rules/repospec.mdc`. */
+/**
+ * Adapter for Cursor, emitting `.cursor/rules/repospec.mdc`. The `.mdc`
+ * frontmatter is required for the rule to activate: `alwaysApply: true` loads
+ * this project context in every request.
+ */
 export const cursorAdapter: Adapter = {
   id: 'cursor',
   description: 'Cursor — generates .cursor/rules/repospec.mdc',
-  render: (repo) => [
-    { path: '.cursor/rules/repospec.mdc', body: renderAssistantGuide(repo) },
+  render: (repo: RepospecRepository) => [
+    {
+      path: '.cursor/rules/repospec.mdc',
+      body: withFrontmatter(
+        [
+          `description: ${JSON.stringify(`Project constitution, architecture, and rules for ${repo.project.project.name}.`)}`,
+          'alwaysApply: true',
+        ],
+        renderAssistantGuide(repo),
+      ),
+    },
   ],
 };
 
-/** Adapter for Windsurf, emitting `.windsurf/rules/repospec.md`. */
+/**
+ * Adapter for Windsurf, emitting `.windsurf/rules/repospec.md`. The
+ * `trigger: always_on` frontmatter is required for Cascade to include the rule
+ * in every message; without it the rule defaults to manual (@-mention only).
+ */
 export const windsurfAdapter: Adapter = {
   id: 'windsurf',
   description: 'Windsurf — generates .windsurf/rules/repospec.md',
   render: (repo) => [
-    { path: '.windsurf/rules/repospec.md', body: renderAssistantGuide(repo) },
+    {
+      path: '.windsurf/rules/repospec.md',
+      body: withFrontmatter(['trigger: always_on'], renderAssistantGuide(repo)),
+    },
   ],
 };
 

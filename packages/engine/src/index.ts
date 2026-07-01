@@ -93,6 +93,17 @@ export {
   type UpgradeStatus,
 } from './operations/upgrade.js';
 
+// Plugins (declarative + gated runtime; ADR-0008/0009)
+export { integrityOf } from './plugins/integrity.js';
+export {
+  runPlugins,
+  resolvePlugins,
+  buildApprovalLock,
+  type PluginOutput,
+  type PluginRunResult,
+  type ResolvedPlugin,
+} from './plugins/host.js';
+
 // AI-assisted operations (require an injected LlmClient)
 export type { LlmClient, LlmCompleteOptions } from './llm.js';
 export {

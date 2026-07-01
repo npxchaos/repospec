@@ -27,6 +27,7 @@
     "@anthropic-ai/sdk": "^0.109.0",
     "@clack/prompts": "^0.9.1",
     "@repospec/engine": "workspace:*",
+    "@repospec/protocol": "workspace:*",
     "commander": "^13.0.0"
   },
   "publishConfig": {

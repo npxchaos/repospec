@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/npxchaos/repospec/main/schemas/0.1/plugin-lock.schema.json",
+  "title": "Repospec plugin approval lockfile",
+  "type": "object",
+  "properties": {
+    "repospecProtocol": {
+      "type": "string"
+    },
+    "approved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "integrity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "contribute-rules",
+                "contribute-agents",
+                "generate-outputs",
+                "read-repo",
+                "network"
+              ]
+            },
+            "default": []
+          },
+          "approvedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "integrity"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}

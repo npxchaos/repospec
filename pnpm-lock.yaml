@@ -53,6 +53,9 @@ importers:
       '@repospec/engine':
         specifier: workspace:*
         version: link:../engine
+      '@repospec/protocol':
+        specifier: workspace:*
+        version: link:../protocol
       commander:
         specifier: ^13.0.0
         version: 13.1.0

@@ -46,45 +46,53 @@ function registerSync(program: Command): void {
     .description('Regenerate tool entrypoints from .repospec/')
     .option('-f, --force', 'overwrite hand-modified outputs')
     .option('--check', 'report drift without writing (for CI)')
-    .action(async (flags: { force?: boolean; check?: boolean }) => {
-      try {
-        const result = await sync(new NodeFileSystem(), {
-          cwd: process.cwd(),
-          force: flags.force,
-          check: flags.check,
-        });
+    .option('--plugins', 'include outputs from approved plugins (ADR-0008)')
+    .action(
+      async (flags: {
+        force?: boolean;
+        check?: boolean;
+        plugins?: boolean;
+      }) => {
+        try {
+          const result = await sync(new NodeFileSystem(), {
+            cwd: process.cwd(),
+            force: flags.force,
+            check: flags.check,
+            plugins: flags.plugins,
+          });
 
-        for (const conflict of result.conflicts) {
-          warn(
-            `${conflict.path}: ${conflict.reason} (use --force to overwrite)`,
-          );
-        }
-
-        if (flags.check) {
-          if (result.drift) {
-            error('Outputs are out of sync. Run `repospec sync`.');
-            process.exitCode = 1;
-          } else {
-            info('✓ In sync.');
+          for (const conflict of result.conflicts) {
+            warn(
+              `${conflict.path}: ${conflict.reason} (use --force to overwrite)`,
+            );
           }
-          return;
-        }
 
-        const written = result.result?.written ?? [];
-        if (written.length > 0) {
-          for (const path of written) info(`  ~ ${path}`);
-        } else if (result.conflicts.length > 0) {
-          info(
-            `No changes written — ${result.conflicts.length} output(s) modified by hand. Use --force to overwrite.`,
-          );
-        } else {
-          info('✓ Already in sync.');
+          if (flags.check) {
+            if (result.drift) {
+              error('Outputs are out of sync. Run `repospec sync`.');
+              process.exitCode = 1;
+            } else {
+              info('✓ In sync.');
+            }
+            return;
+          }
+
+          const written = result.result?.written ?? [];
+          if (written.length > 0) {
+            for (const path of written) info(`  ~ ${path}`);
+          } else if (result.conflicts.length > 0) {
+            info(
+              `No changes written — ${result.conflicts.length} output(s) modified by hand. Use --force to overwrite.`,
+            );
+          } else {
+            info('✓ Already in sync.');
+          }
+        } catch (err) {
+          if (handleNoRepo(err)) return;
+          throw err;
         }
-      } catch (err) {
-        if (handleNoRepo(err)) return;
-        throw err;
-      }
-    });
+      },
+    );
 }
 
 /** Register `repospec generate`. */
@@ -94,26 +102,30 @@ function registerGenerate(program: Command): void {
     .description('Render tool entrypoints from .repospec/')
     .option('-f, --force', 'overwrite hand-modified outputs')
     .option('--only <list>', 'comma-separated adapter ids to render')
-    .action(async (flags: { force?: boolean; only?: string }) => {
-      try {
-        const { plan, result } = await generate(new NodeFileSystem(), {
-          cwd: process.cwd(),
-          force: flags.force,
-          only: flags.only
-            ? flags.only.split(',').map((s) => s.trim())
-            : undefined,
-        });
-        for (const warning of plan.warnings) warn(warning);
-        if (result.written.length === 0) {
-          info('✓ Nothing to write.');
-        } else {
-          for (const path of result.written) info(`  ~ ${path}`);
+    .option('--plugins', 'include outputs from approved plugins (ADR-0008)')
+    .action(
+      async (flags: { force?: boolean; only?: string; plugins?: boolean }) => {
+        try {
+          const { plan, result } = await generate(new NodeFileSystem(), {
+            cwd: process.cwd(),
+            force: flags.force,
+            plugins: flags.plugins,
+            only: flags.only
+              ? flags.only.split(',').map((s) => s.trim())
+              : undefined,
+          });
+          for (const warning of plan.warnings) warn(warning);
+          if (result.written.length === 0) {
+            info('✓ Nothing to write.');
+          } else {
+            for (const path of result.written) info(`  ~ ${path}`);
+          }
+        } catch (err) {
+          if (handleNoRepo(err)) return;
+          throw err;
         }
-      } catch (err) {
-        if (handleNoRepo(err)) return;
-        throw err;
-      }
-    });
+      },
+    );
 }
 
 /** Register the maintenance commands: doctor, sync, generate. */

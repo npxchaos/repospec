@@ -5,9 +5,13 @@ import {
   AgentSchema,
   ProjectSchema,
   RuleSchema,
+  PluginManifestSchema,
+  PluginLockSchema,
   type AgentFrontmatter,
   type Project,
   type RuleFrontmatter,
+  type PluginManifest,
+  type PluginLock,
 } from './schemas.js';
 
 /** A parsed agent artifact: validated frontmatter plus its Markdown body. */
@@ -102,4 +106,68 @@ export function parseRule(text: string): Rule {
     );
   }
   return { meta: result.data, body };
+}
+
+/**
+ * Parse and validate a plugin manifest (`repospec-plugin.yaml`).
+ *
+ * @param text - The raw file contents.
+ * @returns The validated manifest.
+ * @throws {RepospecValidationError} On invalid YAML or schema violations.
+ */
+export function parsePluginManifest(text: string): PluginManifest {
+  let raw: unknown;
+  try {
+    raw = parseYaml(text);
+  } catch (error) {
+    throw new RepospecValidationError(
+      `plugin manifest is not valid YAML: ${(error as Error).message}`,
+      [],
+    );
+  }
+  const result = PluginManifestSchema.safeParse(raw);
+  if (!result.success) {
+    throw new RepospecValidationError(
+      'plugin manifest failed validation:',
+      formatZodError(result.error),
+    );
+  }
+  return result.data;
+}
+
+/**
+ * Parse and validate the approval lockfile (`.repospec/plugins.lock`).
+ *
+ * @param text - The raw file contents.
+ * @returns The validated lockfile.
+ * @throws {RepospecValidationError} On invalid YAML or schema violations.
+ */
+export function parsePluginLock(text: string): PluginLock {
+  let raw: unknown;
+  try {
+    raw = parseYaml(text);
+  } catch (error) {
+    throw new RepospecValidationError(
+      `plugins.lock is not valid YAML: ${(error as Error).message}`,
+      [],
+    );
+  }
+  const result = PluginLockSchema.safeParse(raw);
+  if (!result.success) {
+    throw new RepospecValidationError(
+      'plugins.lock failed validation:',
+      formatZodError(result.error),
+    );
+  }
+  return result.data;
+}
+
+/**
+ * Serialize an approval lockfile to YAML.
+ *
+ * @param lock - The lockfile to serialize.
+ * @returns YAML text for `.repospec/plugins.lock`.
+ */
+export function serializePluginLock(lock: PluginLock): string {
+  return stringifyYaml(lock);
 }

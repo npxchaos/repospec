@@ -17,6 +17,11 @@ export interface RenderOptions {
   only?: string[];
   /** Adapter registry to resolve ids against. Default: built-ins. */
   registry?: AdapterRegistry;
+  /**
+   * Extra outputs from approved plugins (ADR-0009). Planned through the same
+   * ownership/managed pipeline as adapter outputs.
+   */
+  pluginOutputs?: { path: string; body: string }[];
 }
 
 /** Planned adapter writes plus warnings for unknown adapter ids. */
@@ -63,6 +68,12 @@ export async function planAdapterWrites(
         await planOutput(fs, repoRoot, output.path, output.body, force),
       );
     }
+  }
+
+  for (const output of options.pluginOutputs ?? []) {
+    writes.push(
+      await planOutput(fs, repoRoot, output.path, output.body, force),
+    );
   }
 
   return { writes, warnings };

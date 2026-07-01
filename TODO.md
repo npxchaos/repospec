@@ -81,8 +81,10 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Remaining:** only the plugin _runtime_ that
-[ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates — it needs a
-security-reviewed sandbox + consent/capability model and its own implementation
-ADR before any plugin code runs. Every other milestone deliverable is done;
-plugins are declarative-only until that lands.
+**Every roadmap deliverable is done.** The gated plugin runtime now ships
+([ADR-0009](./docs/adr/0009-plugin-sandbox-mechanism.md),
+[RFC-0001](./spec/rfcs/0001-plugin-manifest-and-consent.md)): manifests, an
+approval lockfile pinned by integrity hash, and worker-isolated, consent-gated,
+opt-in execution (`plugins list`/`approve`, `generate --plugins`). Future
+hardening only: a stricter sandbox target (WASM / OS-sandboxed subprocess) and
+npm-based plugin resolution.

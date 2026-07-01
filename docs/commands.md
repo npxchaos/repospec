@@ -58,9 +58,24 @@ provider-agnostic and unit-tested without a network.
 ## Plugins
 
 `project.yaml` may declare `plugins` (see [`spec/configuration.md`](../spec/configuration.md)
-§3.7). Plugins are **declarative only** — no plugin code is executed. `doctor`
-validates the references and `sync` surfaces them in the generated guide; running
-plugin code is gated behind a future security ADR (roadmap Milestone 6).
+§3.7). A plugin lives at `.repospec/plugins/<id>/` with a `repospec-plugin.yaml`
+manifest ([RFC-0001](../spec/rfcs/0001-plugin-manifest-and-consent.md)) and runs
+only under the trust model in
+[ADR-0008](./adr/0008-plugin-runtime-security.md) / [ADR-0009](./adr/0009-plugin-sandbox-mechanism.md):
+**integrity + consent are the gate**, execution is a worker with no ambient
+environment, and it is opt-in.
+
+| Command | What it does |
+| --- | --- |
+| `repospec plugins list` | List declared plugins with their approval status and declared capabilities. |
+| `repospec plugins approve [--yes]` | Write `.repospec/plugins.lock` approving each declared plugin's **exact current code** (pinned by integrity hash) and its declared capabilities. |
+| `repospec generate --plugins` / `repospec sync --plugins` | Include outputs from approved plugins. A plugin runs only if the lockfile approves it and the on-disk integrity still matches; anything else is skipped with a warning, never run. |
+
+A plugin is a module that default-exports `async ({ repo, capabilities }) => ({ outputs: [{ path, body }] })`.
+Its outputs go through the same ownership/managed pipeline as adapter outputs, so
+they carry a managed header and never clobber hand-edits without `--force`.
+Executable plugins require the `generate-outputs` capability, declared in the
+manifest and approved in the lockfile.
 
 ## Exit codes
 

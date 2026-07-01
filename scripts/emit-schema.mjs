@@ -7,6 +7,8 @@ import {
   ProjectSchema,
   AgentSchema,
   RuleSchema,
+  PluginManifestSchema,
+  PluginLockSchema,
   PROTOCOL_VERSION,
 } from '@repospec/protocol';
 
@@ -18,6 +20,8 @@ const artifacts = [
   ['project', ProjectSchema, 'Repospec project.yaml'],
   ['agent', AgentSchema, 'Repospec agent frontmatter'],
   ['rule', RuleSchema, 'Repospec rule frontmatter'],
+  ['plugin-manifest', PluginManifestSchema, 'Repospec plugin manifest'],
+  ['plugin-lock', PluginLockSchema, 'Repospec plugin approval lockfile'],
 ];
 
 for (const [name, schema, title] of artifacts) {

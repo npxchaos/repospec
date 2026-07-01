@@ -12,6 +12,7 @@ import {
   type FilePlan,
   type PlannedWrite,
 } from '../plan.js';
+import { runPlugins } from '../plugins/host.js';
 import { requireRepoRoot } from './locate-root.js';
 
 /** Options for {@link sync}. */
@@ -24,6 +25,8 @@ export interface SyncOptions {
   check?: boolean;
   /** Adapter registry to use. Default: built-ins. */
   registry?: AdapterRegistry;
+  /** Run approved plugins and include their outputs (opt-in; ADR-0009). */
+  plugins?: boolean;
 }
 
 /** The outcome of a sync (or a `--check` dry run). */
@@ -64,13 +67,23 @@ export async function sync(
   const cwd = options.cwd ?? process.cwd();
   const root = await requireRepoRoot(fs, cwd);
   const repo = await readRepospec(fs, join(root, REPOSPEC_DIR));
+
+  let pluginOutputs: { path: string; body: string }[] | undefined;
+  const pluginWarnings: string[] = [];
+  if (options.plugins) {
+    const run = await runPlugins(fs, root);
+    pluginOutputs = run.outputs;
+    pluginWarnings.push(...run.warnings);
+  }
+
   const adapterPlan = await planAdapterWrites(fs, root, repo, {
     force: options.force,
     registry: options.registry,
+    pluginOutputs,
   });
   const plan: FilePlan = {
     writes: adapterPlan.writes,
-    warnings: adapterPlan.warnings,
+    warnings: [...adapterPlan.warnings, ...pluginWarnings],
   };
 
   const changes = plan.writes.filter((w) => w.action !== 'skip');

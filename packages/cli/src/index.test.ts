@@ -15,6 +15,7 @@ describe('createProgram', () => {
       'upgrade',
       'review',
       'architect',
+      'plugins',
     ]) {
       expect(names).toContain(name);
     }

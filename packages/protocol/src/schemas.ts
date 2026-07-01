@@ -127,3 +127,47 @@ export type AdapterRef = z.infer<typeof AdapterRefSchema>;
 export type AgentFrontmatter = z.infer<typeof AgentSchema>;
 /** Rule frontmatter. */
 export type RuleFrontmatter = z.infer<typeof RuleSchema>;
+
+// --- Plugins (RFC-0001; execution gated by ADR-0008/0009) -----------------
+
+/** The closed set of capabilities a plugin may declare and be granted. */
+export const PluginCapability = z.enum([
+  'contribute-rules',
+  'contribute-agents',
+  'generate-outputs',
+  'read-repo',
+  'network',
+]);
+
+/** A plugin's self-description (`repospec-plugin.yaml`). */
+export const PluginManifestSchema = z.object({
+  id: z.string().min(1),
+  version: z.string().min(1),
+  description: z.string().min(1),
+  capabilities: z.array(PluginCapability).default([]),
+  /** Worker entry module, relative to the plugin directory. */
+  entry: z.string().default('index.mjs'),
+});
+
+/** One operator-approved plugin in `.repospec/plugins.lock`. */
+export const PluginLockEntrySchema = z.object({
+  id: z.string().min(1),
+  version: z.string().min(1),
+  /** Hash of the resolved entry artifact — `sha256-<base64>`. */
+  integrity: z.string().min(1),
+  capabilities: z.array(PluginCapability).default([]),
+  approvedAt: z.string().optional(),
+});
+
+/** The approval lockfile. */
+export const PluginLockSchema = z.object({
+  repospecProtocol: z.string().optional(),
+  approved: z.array(PluginLockEntrySchema).default([]),
+});
+
+/** A validated plugin manifest. */
+export type PluginManifest = z.infer<typeof PluginManifestSchema>;
+/** A validated approval-lockfile entry. */
+export type PluginLockEntry = z.infer<typeof PluginLockEntrySchema>;
+/** A validated approval lockfile. */
+export type PluginLock = z.infer<typeof PluginLockSchema>;

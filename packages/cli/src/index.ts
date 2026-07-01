@@ -13,6 +13,7 @@ import { registerInit } from './commands/init.js';
 import { registerBootstrap } from './commands/bootstrap.js';
 import { registerUpgrade } from './commands/upgrade.js';
 import { registerAi } from './commands/ai.js';
+import { registerPlugins } from './commands/plugins.js';
 import { registerMaintenance } from './commands/maintenance.js';
 
 const CLI_VERSION = __CLI_VERSION__;
@@ -38,6 +39,7 @@ export function createProgram(): Command {
   registerBootstrap(program);
   registerUpgrade(program);
   registerAi(program);
+  registerPlugins(program);
   registerMaintenance(program);
 
   return program;

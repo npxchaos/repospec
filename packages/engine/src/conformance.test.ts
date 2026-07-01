@@ -72,3 +72,51 @@ describe('conformance: invalid inputs are rejected', () => {
     );
   });
 });
+
+describe('conformance: agent and rule artifacts', () => {
+  const PROJECT = [
+    'repospecProtocol: "0.1"',
+    'project:',
+    '  name: x',
+    '  description: A project.',
+    '  type: service',
+    'stack:',
+    '  languages: [typescript]',
+  ].join('\n');
+
+  function readWith(files: Record<string, string>) {
+    return readRepospec(
+      new MemoryFileSystem({ '/r/.repospec/project.yaml': PROJECT, ...files }),
+      '/r/.repospec',
+    );
+  }
+
+  it('parses valid agent and rule frontmatter', async () => {
+    const repo = await readWith({
+      '/r/.repospec/agents/reviewer.md':
+        '---\nid: reviewer\nname: Reviewer\ndescription: Reviews diffs.\n---\nBody.',
+      '/r/.repospec/rules/tests.md':
+        '---\nid: tests\ntitle: Tests required\nseverity: error\n---\nBody.',
+    });
+    expect(repo.agents.map((a) => a.meta.id)).toContain('reviewer');
+    expect(repo.rules.map((r) => r.meta.id)).toContain('tests');
+  });
+
+  it('rejects an agent missing a required field (name)', async () => {
+    await expect(
+      readWith({
+        '/r/.repospec/agents/bad.md':
+          '---\nid: bad\ndescription: No name.\n---\nBody.',
+      }),
+    ).rejects.toBeInstanceOf(RepospecValidationError);
+  });
+
+  it('rejects a rule with an out-of-enum severity', async () => {
+    await expect(
+      readWith({
+        '/r/.repospec/rules/bad.md':
+          '---\nid: bad\ntitle: Bad\nseverity: critical\n---\nBody.',
+      }),
+    ).rejects.toBeInstanceOf(RepospecValidationError);
+  });
+});

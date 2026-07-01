@@ -54,6 +54,7 @@ clobbered if you hand-edit them (without `--force`). See a real result in
 Start here:
 
 - [`docs/commands.md`](./docs/commands.md) — **the full command reference**.
+- [`docs/templates.md`](./docs/templates.md) — authoring and customizing seed content.
 - [`docs/vision.md`](./docs/vision.md) — **why Repospec exists** (read this first).
 - [`spec/`](./spec/) — the **Repospec Specification**, the heart of the project.
 - [`docs/analysis.md`](./docs/analysis.md) — weaknesses in the brief and fixes.

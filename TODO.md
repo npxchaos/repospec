@@ -42,7 +42,7 @@ and the [ADRs](./docs/adr/). Phases follow the charter **in order**.
 ## ▸ Milestone 4 — Phase 6: Templates system
 - [x] 4.1 Variable interpolation + partials (`interpolate` / `partials`, used by seed content)
 - [x] 4.2 Cursor + Copilot adapters _(shipped early in Milestone 3)_
-- [ ] 4.3 Template authoring docs
+- [x] 4.3 Template authoring docs ([`docs/templates.md`](./docs/templates.md))
 
 ## ▸ Milestone 5 — Phase 7: Protocol validation & schema
 - [x] 5.1 Generate JSON Schema from zod → `schemas/0.1/` (ADR-0005), CI drift-guard
@@ -81,8 +81,8 @@ entrypoints (Claude, AGENTS.md, Cursor, Copilot, Windsurf, Gemini). JSON Schema
 is generated from zod and drift-guarded in CI. Packages are published to npm and
 released automatically via Changesets. See [`docs/commands.md`](./docs/commands.md).
 
-**Remaining:** the plugin _runtime_ that
-[ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates (plugins are
-declarative-only today), and optional depth items — a larger conformance fixture
-corpus (5.2) and richer template-authoring docs (4.3). The roadmap's command
-surface and every milestone deliverable except the gated plugin runtime are done.
+**Remaining:** only the plugin _runtime_ that
+[ADR-0008](./docs/adr/0008-plugin-runtime-security.md) gates — it needs a
+security-reviewed sandbox + consent/capability model and its own implementation
+ADR before any plugin code runs. Every other milestone deliverable is done;
+plugins are declarative-only until that lands.

@@ -1,5 +1,26 @@
 # @repospec/cli
 
+## 0.10.1
+
+### Patch Changes
+
+- 8be1271: Fix Cursor and Windsurf rule activation. Both tools require frontmatter for a
+  rule file to auto-apply, which the generated outputs were missing — so the files
+  were written but never loaded. The `cursor` adapter now emits `.mdc` frontmatter
+  with `alwaysApply: true` (and a `description`), and the `windsurf` adapter now
+  emits `trigger: always_on`. The managed-header wrapper keeps this frontmatter on
+  line 1. Paths are unchanged (`.cursor/rules/repospec.mdc`,
+  `.windsurf/rules/repospec.md`); run `repospec sync` to regenerate.
+- 9c89345: Slugify the `claude-agents` subagent `name` and filename to Claude Code's rule
+  (lowercase letters and hyphens only), so a role id like `Code_Reviewer` produces
+  a loadable `code-reviewer` name instead of an invalid one. Verified end to end:
+  generated files load in real Claude Code via `claude --agent <name>`, adopting
+  the role name and system prompt.
+- Updated dependencies [8be1271]
+- Updated dependencies [9c89345]
+  - @repospec/engine@0.10.1
+  - @repospec/protocol@0.10.1
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@repospec/templates",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Default content and adapter templates the Repospec protocol is seeded from.",
   "license": "MIT",
   "type": "module",

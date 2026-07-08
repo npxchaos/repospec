@@ -24,11 +24,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.109.0",
-    "@clack/prompts": "^0.9.1",
+    "@anthropic-ai/sdk": "^0.110.0",
+    "@clack/prompts": "^1.7.0",
     "@repospec/engine": "workspace:*",
     "@repospec/protocol": "workspace:*",
-    "commander": "^13.0.0"
+    "commander": "^15.0.0"
   },
   "publishConfig": {
     "access": "public"
